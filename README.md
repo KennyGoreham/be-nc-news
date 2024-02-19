@@ -1,3 +1,3 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+To clone and run this project locally, please create and configure your environment variabl files to connect to the correct databases. (e.g. in .env.test "PGDATABASE=your_test_database_name_here").
