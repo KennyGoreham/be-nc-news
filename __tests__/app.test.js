@@ -81,4 +81,20 @@ describe('/api/articles/:article_id', () => {
               });
         });
     });
+    test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
+        return request(app)
+        .get('/api/articles/9999')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Resource not found.");
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
+        return request(app)
+        .get('/api/articles/notAnId')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        })
+    });
 });
