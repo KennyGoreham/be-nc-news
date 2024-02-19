@@ -30,5 +30,11 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves up an article object that matches the article_id provided",
+    "queries": [],
+    "exampleBody": {},
+    "exampleResponse": {}
   }
 }
