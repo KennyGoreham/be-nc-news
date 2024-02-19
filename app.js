@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { handleServerErrors } = require('./errors');
+const { handlePsqlErrors, handleCustomErrors, handleServerErrors } = require('./errors');
 const { getTopics } = require('./controllers/topics-controller.js');
 const { getApi } = require('./controllers/api-controller.js');
 const { getArticleById } = require('./controllers/articles-controller.js');
@@ -14,6 +14,10 @@ app.get('/api/articles/:article_id', getArticleById);
 app.all('/*', (req, res, next) => {
     res.status(404).send({ msg: "Path not found." });
 })
+
+app.use(handlePsqlErrors);
+
+app.use(handleCustomErrors);
 
 app.use(handleServerErrors);
 
