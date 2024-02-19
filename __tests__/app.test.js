@@ -61,3 +61,24 @@ describe('/api', () => {
         });
     });
 });
+
+describe('/api/articles/:article_id', () => {
+    test('GET:200 responds with an article object where article_id matches given parameterised endpoint', () => {
+        return request(app)
+        .get('/api/articles/5')
+        .expect(200)
+        .then(({ body: { article } }) => {
+            expect(article).toEqual({
+                article_id: 5,
+                title: "UNCOVERED: catspiracy to bring down democracy",
+                topic: "cats",
+                author: "rogersop",
+                body: "Bastet walks amongst us, and the cats are taking arms!",
+                votes: 0,
+                created_at: '2020-08-03T13:14:00.000Z',
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+        });
+    });
+});
