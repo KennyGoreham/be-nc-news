@@ -84,7 +84,7 @@ describe('/api/articles/:article_id', () => {
 });
 
 describe('/api/articles', () => {
-    test(`GET:200 responds with an array of articles objects which should include a 'comments' count and be sorted by date in descending order by default`, () => {
+    test(`GET:200 responds with an array of article objects which should include a 'comments' count and be sorted by date in descending order by default`, () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
@@ -102,6 +102,15 @@ describe('/api/articles', () => {
             })
             expect(articles).toBeSortedBy('created_at', { descending: true, coerce: true });
         });
+    });
+    test('GET:200 responds with an array of article objects which should include a comment count and be sorted and ordered by queries', () => {
+        return request(app)
+        .get('/api/articles?sort_by=title&order=desc')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles.length).toBe(13);
+            expect(articles).toBeSortedBy('title', { descending: true });
+        })
     });
     test('GET:400 responds with an appropriate status code and error message when given an invalid ordering query', () => {
         return request(app)
