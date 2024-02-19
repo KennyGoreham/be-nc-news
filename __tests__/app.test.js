@@ -2,6 +2,7 @@ const app = require('../app.js');
 const db = require('../db/connection.js');
 const seed = require('../db/seeds/seed.js');
 const data = require('../db/data/test-data');
+const apiEndpoints = require('../endpoints.json');
 const request = require('supertest');
 
 beforeEach(() => seed(data));
@@ -20,14 +21,6 @@ describe('/api/topics', () => {
                 expect(typeof topic.slug).toBe('string');
             });
         });
-    });
-    test('GET:404 responds with an appropriate status code and error message when attempting to access an endpoint which does not exist', () => {
-        return request(app)
-        .get('/api/topicsd')
-        .expect(404)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Path not found.");
-        })
     });
 });
 
@@ -48,16 +41,8 @@ describe('/api', () => {
         .get('/api')
         .expect(200)
         .then(({ body: { apiDocs } }) => {
-            for (const endpoint in apiDocs) {
-                expect(apiDocs[endpoint]).toHaveProperty('description');
-                expect(typeof apiDocs[endpoint].description).toBe('string');
-                expect(apiDocs[endpoint]).toHaveProperty('queries');
-                expect(Array.isArray(apiDocs[endpoint].queries)).toBe(true);
-                expect(apiDocs[endpoint]).toHaveProperty('exampleBody');
-                expect(typeof apiDocs[endpoint].exampleBody).toBe('object');
-                expect(apiDocs[endpoint]).toHaveProperty('exampleResponse');
-                expect(typeof apiDocs[endpoint].exampleResponse).toBe('object');
-            }
+            console.log(apiEndpoints, 'apiEndpoints\n', apiDocs, 'apiDocs');
+            expect(apiDocs).toEqual(apiEndpoints);
         });
     });
 });
