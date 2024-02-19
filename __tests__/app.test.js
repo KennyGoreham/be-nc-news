@@ -36,12 +36,11 @@ describe('/*', () => {
 });
 
 describe('/api', () => {
-    test('GET: 200 responds with an object describing all the available endpoints on the api', () => {
+    test('GET: 200 responds with an array of objects describing all the available endpoints on the api', () => {
         return request(app)
         .get('/api')
         .expect(200)
         .then(({ body: { apiDocs } }) => {
-            console.log(apiEndpoints, 'apiEndpoints\n', apiDocs, 'apiDocs');
             expect(apiDocs).toEqual(apiEndpoints);
         });
     });
@@ -81,5 +80,43 @@ describe('/api/articles/:article_id', () => {
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad request.");
         })
+    });
+});
+
+describe('/api/articles', () => {
+    test(`GET:200 responds with an array of articles objects which should include a 'comments' count and be sorted by date in descending order by default`, () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles.length).toBe(13);
+            articles.forEach((article) => {
+                expect(typeof article.author).toBe('string');
+                expect(typeof article.title).toBe('string');
+                expect(typeof article.article_id).toBe('number');
+                expect(typeof article.topic).toBe('string');
+                expect(typeof article.created_at).toBe('string');
+                expect(typeof article.votes).toBe('number');
+                expect(typeof article.article_img_url).toBe('string');
+                expect(typeof article.comment_count).toBe('string');
+            })
+            expect(articles).toBeSortedBy('created_at', { descending: true, coerce: true });
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when given an invalid ordering query', () => {
+        return request(app)
+        .get('/api/articles?order=anythingElse')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when given an invalid sorting query', () => {
+        return request(app)
+        .get('/api/articles?sort_by=anythingElse')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        });
     });
 });
