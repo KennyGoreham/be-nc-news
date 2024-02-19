@@ -41,3 +41,23 @@ describe('/*', () => {
         })
     });
 });
+
+describe('/api', () => {
+    test('GET: 200 responds with an object describing all the available endpoints on the api', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body: { apiDocs } }) => {
+            for (const endpoint in apiDocs) {
+                expect(apiDocs[endpoint]).toHaveProperty('description');
+                expect(typeof apiDocs[endpoint].description).toBe('string');
+                expect(apiDocs[endpoint]).toHaveProperty('queries');
+                expect(Array.isArray(apiDocs[endpoint].queries)).toBe(true);
+                expect(apiDocs[endpoint]).toHaveProperty('exampleBody');
+                expect(typeof apiDocs[endpoint].exampleBody).toBe('object');
+                expect(apiDocs[endpoint]).toHaveProperty('exampleResponse');
+                expect(typeof apiDocs[endpoint].exampleResponse).toBe('object');
+            }
+        });
+    });
+});
