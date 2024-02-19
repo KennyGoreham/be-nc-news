@@ -3,12 +3,13 @@ const app = express();
 const { handlePsqlErrors, handleCustomErrors, handleServerErrors } = require('./errors');
 const { getTopics } = require('./controllers/topics-controller.js');
 const { getApi } = require('./controllers/api-controller.js');
-const { getArticleById } = require('./controllers/articles-controller.js');
+const { getArticleById, getArticles } = require('./controllers/articles-controller.js');
 
 app.get('/api', getApi);
 
 app.get('/api/topics', getTopics);
 
+app.get('/api/articles', getArticles);
 app.get('/api/articles/:article_id', getArticleById);
 
 app.all('/*', (req, res, next) => {
