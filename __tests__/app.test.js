@@ -79,7 +79,7 @@ describe('/api/articles/:article_id', () => {
         .expect(400)
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad request.");
-        })
+        });
     });
 });
 
@@ -99,7 +99,7 @@ describe('/api/articles', () => {
                 expect(typeof article.votes).toBe('number');
                 expect(typeof article.article_img_url).toBe('string');
                 expect(typeof article.comment_count).toBe('string');
-            })
+            });
             expect(articles).toBeSortedBy('created_at', { descending: true, coerce: true });
         });
     });
@@ -110,7 +110,7 @@ describe('/api/articles', () => {
         .then(({ body: { articles } }) => {
             expect(articles.length).toBe(13);
             expect(articles).toBeSortedBy('title', { descending: true });
-        })
+        });
     });
     test('GET:400 responds with an appropriate status code and error message when given an invalid ordering query', () => {
         return request(app)
@@ -123,6 +123,68 @@ describe('/api/articles', () => {
     test('GET:400 responds with an appropriate status code and error message when given an invalid sorting query', () => {
         return request(app)
         .get('/api/articles?sort_by=anythingElse')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        });
+    });
+});
+
+describe('/api/articles/:article_id/comments', () => {
+    test(`GET:200 responds with an array of comments pertaining to a parameterised article_id, ordering by most recent ('created_at') first ('desc')`, () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            expect(comments.length).toBe(11);
+            comments.forEach((comment) => {
+                expect(typeof comment.comment_id).toBe('number');
+                expect(typeof comment.votes).toBe('number');
+                expect(typeof comment.created_at).toBe('string');
+                expect(typeof comment.author).toBe('string');
+                expect(typeof comment.body).toBe('string');
+                expect(typeof comment.article_id).toBe('number');
+                expect(comment.article_id).toBe(1);
+            });
+            expect(comments).toBeSortedBy('created_at', { descending: true });
+        });
+    });
+    test('GET:200 responds with an array of comments pertaining to a parameterised article_id, ordered and sorted by queries', () => {
+        return request(app)
+        .get('/api/articles/1/comments?sort_by=votes&order=asc')
+        .expect(200)
+        .then(({body: { comments } }) => {
+            expect(comments.length).toBe(11);
+            expect(comments).toBeSortedBy('votes');
+        });
+    });
+    test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
+        return request(app)
+        .get('/api/articles/99999/comments')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Resource not found.");
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
+        return request(app)
+        .get('/api/articles/notAnId/comments')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when given an invalid sorting query', () => {
+        return request(app)
+        .get('/api/articles/1/comments?sort_by=anythingElse')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when given an invalid ordering query', () => {
+        return request(app)
+        .get('/api/articles/1/comments?order=anythingElse')
         .expect(400)
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad request.");
