@@ -36,7 +36,7 @@ describe('/*', () => {
 });
 
 describe('/api', () => {
-    test('GET: 200 responds with an array of objects describing all the available endpoints on the api', () => {
+    test('GET:200 responds with an array of objects describing all the available endpoints on the api', () => {
         return request(app)
         .get('/api')
         .expect(200)
@@ -131,71 +131,154 @@ describe('/api/articles', () => {
 });
 
 describe('/api/articles/:article_id/comments', () => {
-    test(`GET:200 responds with an array of comments pertaining to a parameterised article_id, ordering by most recent ('created_at') first ('desc')`, () => {
-        return request(app)
-        .get('/api/articles/1/comments')
-        .expect(200)
-        .then(({ body: { comments } }) => {
-            expect(comments.length).toBe(11);
-            comments.forEach((comment) => {
+    describe('GET', () => {
+        test(`GET:200 responds with an array of comments pertaining to a parameterised article_id, ordering by most recent ('created_at') first ('desc')`, () => {
+            return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+                expect(comments.length).toBe(11);
+                comments.forEach((comment) => {
+                    expect(typeof comment.comment_id).toBe('number');
+                    expect(typeof comment.votes).toBe('number');
+                    expect(typeof comment.created_at).toBe('string');
+                    expect(typeof comment.author).toBe('string');
+                    expect(typeof comment.body).toBe('string');
+                    expect(typeof comment.article_id).toBe('number');
+                    expect(comment.article_id).toBe(1);
+                });
+                expect(comments).toBeSortedBy('created_at', { descending: true });
+            });
+        });
+        test('GET:200 responds with an array of comments pertaining to a parameterised article_id, ordered and sorted by queries', () => {
+            return request(app)
+            .get('/api/articles/1/comments?sort_by=votes&order=asc')
+            .expect(200)
+            .then(({body: { comments } }) => {
+                expect(comments.length).toBe(11);
+                expect(comments).toBeSortedBy('votes');
+            });
+        });
+        test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
+            return request(app)
+            .get('/api/articles/99999/comments')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+        test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
+            return request(app)
+            .get('/api/articles/notAnId/comments')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('GET:400 responds with an appropriate status code and error message when given an invalid sorting query', () => {
+            return request(app)
+            .get('/api/articles/1/comments?sort_by=anythingElse')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('GET:400 responds with an appropriate status code and error message when given an invalid ordering query', () => {
+            return request(app)
+            .get('/api/articles/1/comments?order=anythingElse')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('GET:204 responds with an appropriate status code when given an id that has no comments', () => {
+            return request(app)
+            .get('/api/articles/13/comments')
+            .expect(204)
+            .then(({ body }) => {
+                expect(body).toEqual({});
+            })
+        }); 
+    });
+    describe('POST', () => {
+        test('POST:201 adds a comment for an article using parameterised article_id', () => {
+            const newComment = { 
+                username: 'icellusedkars',
+                body: 'cant stop, wont stop'
+            };
+
+            return request(app)
+            .post('/api/articles/2/comments')
+            .expect(201)
+            .send(newComment)
+            .then(({ body: { comment } }) => {
+                expect(comment).toEqual({
+                    comment_id: 19,
+                    body: 'cant stop, wont stop',
+                    article_id: 2,
+                    author: 'icellusedkars',
+                    votes: 0,
+                    created_at: comment.created_at
+                });
+                expect(Object.keys(comment).length).toBe(6);
                 expect(typeof comment.comment_id).toBe('number');
-                expect(typeof comment.votes).toBe('number');
-                expect(typeof comment.created_at).toBe('string');
-                expect(typeof comment.author).toBe('string');
                 expect(typeof comment.body).toBe('string');
                 expect(typeof comment.article_id).toBe('number');
-                expect(comment.article_id).toBe(1);
+                expect(typeof comment.author).toBe('string');
+                expect(typeof comment.votes).toBe('number');
+                expect(typeof comment.created_at).toBe('string');
             });
-            expect(comments).toBeSortedBy('created_at', { descending: true });
         });
-    });
-    test('GET:200 responds with an array of comments pertaining to a parameterised article_id, ordered and sorted by queries', () => {
-        return request(app)
-        .get('/api/articles/1/comments?sort_by=votes&order=asc')
-        .expect(200)
-        .then(({body: { comments } }) => {
-            expect(comments.length).toBe(11);
-            expect(comments).toBeSortedBy('votes');
+        test('POST:400 responds with an appropriate status code and error message when provided with a malformed request body', () => {
+            const newComment1 = {
+                username: 'whatever'
+            };
+
+            return request(app)
+            .post('/api/articles/2/comments')
+            .expect(400)
+            .send(newComment1)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            })
+            .then(() => {
+
+                return request(app)
+                .post('/api/articles/2/comments')
+                .expect(400)
+                .send({})
+                .then(({ body: { msg } }) => {
+                    expect(msg).toBe("Bad request.");
+                });
+            });
         });
-    });
-    test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
-        return request(app)
-        .get('/api/articles/99999/comments')
-        .expect(404)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Resource not found.");
+        test('POST:400 responds with an appropriate status code and error message when provided with a request body that fails schema validation', () => {
+            const newComment = {
+                username: 5,
+                body: ''
+            };
+
+            return request(app)
+            .post('/api/articles/2/comments')
+            .expect(400)
+            .send(newComment)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
         });
-    });
-    test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
-        return request(app)
-        .get('/api/articles/notAnId/comments')
-        .expect(400)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request.");
+        test('POST:400 responds with an appropriate status code and error message when provided with a valid but non-existent id', () => {
+            const newComment = {
+                username: 'icellusedkars',
+                body: 'cant stop, wont stop'
+            };
+
+            return request(app)
+            .post('/api/articles/notAnId/comments')
+            .expect(400)
+            .send(newComment)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
         });
-    });
-    test('GET:400 responds with an appropriate status code and error message when given an invalid sorting query', () => {
-        return request(app)
-        .get('/api/articles/1/comments?sort_by=anythingElse')
-        .expect(400)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request.");
-        });
-    });
-    test('GET:400 responds with an appropriate status code and error message when given an invalid ordering query', () => {
-        return request(app)
-        .get('/api/articles/1/comments?order=anythingElse')
-        .expect(400)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request.");
-        });
-    });
-    test('GET:204 responds with a appropriate status code when given an id that has no comments', () => {
-        return request(app)
-        .get('/api/articles/13/comments')
-        .expect(204)
-        .then(({ body }) => {
-            expect(body).toEqual({});
-        })
     });
 });
