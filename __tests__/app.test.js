@@ -349,7 +349,28 @@ describe('/api/comments/:comments_id', () => {
             .expect(400)
             .then(({ body: { msg } }) => {
                 expect(msg).toBe("Bad request.");
-            })
+            });
+        });
+    });
+});
+
+describe('/api/users', () => {
+    describe('GET', () => {
+        test('GET:200 responds with an array of user objects, each with a "username", "name" and "avatar_url" property', () => {
+            return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({ body: { users } }) => {
+                expect(users.length).toBe(4);
+                users.forEach((user) => {
+                    expect(user).toHaveProperty('username');
+                    expect(typeof user.username).toBe('string');
+                    expect(user).toHaveProperty('name');
+                    expect(typeof user.name).toBe('string');
+                    expect(user).toHaveProperty('avatar_url');
+                    expect(typeof user.avatar_url).toBe('string');
+                });
+            });
         });
     });
 });
