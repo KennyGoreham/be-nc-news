@@ -190,4 +190,12 @@ describe('/api/articles/:article_id/comments', () => {
             expect(msg).toBe("Bad request.");
         });
     });
+    test('GET:204 responds with a appropriate status code when given an id that has no comments', () => {
+        return request(app)
+        .get('/api/articles/13/comments')
+        .expect(204)
+        .then(({ body }) => {
+            expect(body).toEqual({});
+        })
+    });
 });

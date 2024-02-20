@@ -13,10 +13,7 @@ exports.selectCommentsByArticleId = (sortBy = 'created_at', order = 'desc', arti
 
     return db
     .query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY ${sortBy} ${order};`, [article_id])
-    .then(({ rows, rowCount }) => {
-        if(rowCount === 0) {
-            return Promise.reject({ status: 404, msg: "Resource not found."});
-        }
+    .then(({ rows }) => {
         return rows;
     })
 }
