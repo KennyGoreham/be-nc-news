@@ -42,5 +42,16 @@
     "queries": [],
     "exampleBody": {},
     "exampleResponse": {}
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves up an array of comment objects that matches the article_id provided",
+    "queries": [
+      { "sort_by": [
+        "comment_id", "votes", "created_at", "author", "body", "article_id"]
+      },
+      { "order": ["asc", "desc"] }
+    ],
+    "exampleBody": {},
+    "exampleResponse": {}
   }
 }
