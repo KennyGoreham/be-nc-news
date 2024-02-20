@@ -52,6 +52,29 @@
       { "order": ["asc", "desc"] }
     ],
     "exampleBody": {},
-    "exampleResponse": {}
+    "exampleResponse": {
+      "comment_id": 9,
+      "body": "Superficially charming",
+      "article_id": 1,
+      "author": "icellusedkars",
+      "votes": 0,
+      "created_at": "2020-01-01T03:08:00.000Z"
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "",
+    "queries": [],
+    "exampleBody": {
+      "username": "icellusedkars",
+      "body": "cant stop, wont stop"
+    },
+    "exampleResponse": {
+      "comment_id": 19,
+      "body": "cant stop, wont stop",
+      "article_id": 2,
+      "author": "icellusedkars",
+      "votes": 0,
+      "created_at": "2024-02-20T12:19:32.779Z"
+    }
   }
 }
