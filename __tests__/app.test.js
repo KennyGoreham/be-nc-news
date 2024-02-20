@@ -47,38 +47,96 @@ describe('/api', () => {
 });
 
 describe('/api/articles/:article_id', () => {
-    test('GET:200 responds with an article object where article_id matches given parameterised endpoint', () => {
-        return request(app)
-        .get('/api/articles/5')
-        .expect(200)
-        .then(({ body: { article } }) => {
-            expect(article).toEqual({
-                article_id: 5,
-                title: "UNCOVERED: catspiracy to bring down democracy",
-                topic: "cats",
-                author: "rogersop",
-                body: "Bastet walks amongst us, and the cats are taking arms!",
-                votes: 0,
-                created_at: '2020-08-03T13:14:00.000Z',
-                article_img_url:
-                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              });
+    describe('GET', () => {
+        test('GET:200 responds with an article object where article_id matches given parameterised endpoint', () => {
+            return request(app)
+            .get('/api/articles/5')
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article).toEqual({
+                    article_id: 5,
+                    title: "UNCOVERED: catspiracy to bring down democracy",
+                    topic: "cats",
+                    author: "rogersop",
+                    body: "Bastet walks amongst us, and the cats are taking arms!",
+                    votes: 0,
+                    created_at: '2020-08-03T13:14:00.000Z',
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                  });
+            });
+        });
+        test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
+            return request(app)
+            .get('/api/articles/9999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+        test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
+            return request(app)
+            .get('/api/articles/notAnId')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
         });
     });
-    test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
-        return request(app)
-        .get('/api/articles/9999')
-        .expect(404)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Resource not found.");
+    describe('PATCH', () => {
+        test('PATCH:200 updates an existing article by parameterised article_id', () => {
+            const update = {
+                inc_votes: 2
+            };
+    
+            return request(app)
+            .patch('/api/articles/5')
+            .expect(200)
+            .send(update)
+            .then(({ body: { article } }) => {
+                expect(article).toEqual({
+                    article_id: 5,
+                    title: "UNCOVERED: catspiracy to bring down democracy",
+                    topic: "cats",
+                    author: "rogersop",
+                    body: "Bastet walks amongst us, and the cats are taking arms!",
+                    votes: 2,
+                    created_at: '2020-08-03T13:14:00.000Z',
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                });
+            });
         });
-    });
-    test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
-        return request(app)
-        .get('/api/articles/notAnId')
-        .expect(400)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request.");
+        test('PATCH:400 responds with an appropriate status code and error message when provided with a malformed body', () => {
+            return request(app)
+            .patch('/api/articles/5')
+            .expect(400)
+            .send({})
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when attempting to update database with an incorrect type ', () => {
+            return request(app)
+            .patch('/api/articles/5')
+            .expect(400)
+            .send({
+                inc_votes: 'hello'
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when attempting to update a non-existent article', () => {
+            return request(app)
+            .patch('/api/articles/99999')
+            .expect(400)
+            .send({
+                inc_votes: 5
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
         });
     });
 });
@@ -266,7 +324,7 @@ describe('/api/articles/:article_id/comments', () => {
                 expect(msg).toBe("Bad request.");
             });
         });
-        test('POST:400 responds with an appropriate status code and error message when provided with a valid but non-existent id', () => {
+        test('POST:400 responds with an appropriate status code and error message when provided with an invalid id', () => {
             const newComment = {
                 username: 'icellusedkars',
                 body: 'cant stop, wont stop'
