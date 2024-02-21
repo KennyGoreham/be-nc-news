@@ -155,7 +155,7 @@ describe('/api/articles/:article_id', () => {
 });
 
 describe('/api/articles', () => {
-    test(`GET:200 responds with an array of article objects which should include a 'comments' count and be sorted by date in descending order by default`, () => {
+    test(`GET:200 responds with an array of article objects which should include a 'comment_count' key but not a 'body' key, and be sorted by 'created_at' in descending order by default`, () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
@@ -172,30 +172,40 @@ describe('/api/articles', () => {
                     article_img_url: expect.any(String),
                     comment_count: expect.any(String)
                 }));
+                expect(article).toEqual(expect.not.objectContaining({
+                    body: expect.any(String)
+                }));
             });
-            expect(articles).toBeSortedBy('created_at', { descending: true, coerce: true });
+            expect(articles).toBeSortedBy('created_at', { descending: true });
         });
     });
-    test('GET:200 responds with an array of article objects which should include a comment count and be sorted and ordered by queries', () => {
+    test(`GET:200 responds with an array of article objects which should include a 'comment_count' key but not a 'body' key, and be sorted by a 'topic' query`, () => {
         return request(app)
-        .get('/api/articles?sort_by=title&order=desc')
+        .get('/api/articles?sort_by=topic')
         .expect(200)
         .then(({ body: { articles } }) => {
             expect(articles.length).toBe(13);
-            expect(articles).toBeSortedBy('title', { descending: true });
-        });
-    });
-    test('GET:400 responds with an appropriate status code and error message when given an invalid ordering query', () => {
-        return request(app)
-        .get('/api/articles?order=anythingElse')
-        .expect(400)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request.");
+            expect(articles).toBeSortedBy('topic', { descending: true });
+            articles.forEach((article) => {
+                expect(article).toEqual(expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(String)
+                }));
+                expect(article).toEqual(expect.not.objectContaining({
+                    body: expect.any(String)
+                }));
+            });
         });
     });
     test('GET:400 responds with an appropriate status code and error message when given an invalid sorting query', () => {
         return request(app)
-        .get('/api/articles?sort_by=anythingElse')
+        .get('/api/articles?sort_by=9')
         .expect(400)
         .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad request.");

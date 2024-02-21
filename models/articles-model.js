@@ -12,13 +12,9 @@ exports.selectArticleByArticleId = (articleId) => {
     })
 }
 
-exports.selectArticles = (sortBy = 'created_at', order = 'desc') => {
+exports.selectArticles = (sortBy = 'created_at') => {
 
-    if(!['desc', 'asc'].includes(order)) {
-        return Promise.reject({ status: 400, msg: "Bad request."});
-    }
-
-    if(!['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count'].includes(sortBy)) {
+    if(!['created_at', 'topic'].includes(sortBy)) {
         return Promise.reject({ status: 400, msg: "Bad request."});
     }
 
@@ -27,7 +23,7 @@ exports.selectArticles = (sortBy = 'created_at', order = 'desc') => {
     LEFT JOIN comments ON articles.article_id = comments.article_id 
     GROUP BY articles.article_id`;
 
-    queryStr += ` ORDER BY ${sortBy} ${order}`;
+    queryStr += ` ORDER BY ${sortBy} DESC`;
 
     return db
     .query(queryStr)
