@@ -17,8 +17,10 @@ describe('/api/topics', () => {
         .then(({ body: { topics } }) => {
             expect(topics.length).toBe(3);
             topics.forEach((topic) => {
-                expect(typeof topic.description).toBe('string');
-                expect(typeof topic.slug).toBe('string');
+                expect(topic).toEqual(expect.objectContaining({
+                    description: expect.any(String),
+                    slug: expect.any(String)
+                }));
             });
         });
     });
@@ -160,14 +162,16 @@ describe('/api/articles', () => {
         .then(({ body: { articles } }) => {
             expect(articles.length).toBe(13);
             articles.forEach((article) => {
-                expect(typeof article.author).toBe('string');
-                expect(typeof article.title).toBe('string');
-                expect(typeof article.article_id).toBe('number');
-                expect(typeof article.topic).toBe('string');
-                expect(typeof article.created_at).toBe('string');
-                expect(typeof article.votes).toBe('number');
-                expect(typeof article.article_img_url).toBe('string');
-                expect(typeof article.comment_count).toBe('string');
+                expect(article).toEqual(expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(String)
+                }));
             });
             expect(articles).toBeSortedBy('created_at', { descending: true, coerce: true });
         });
@@ -208,13 +212,14 @@ describe('/api/articles/:article_id/comments', () => {
             .then(({ body: { comments } }) => {
                 expect(comments.length).toBe(11);
                 comments.forEach((comment) => {
-                    expect(typeof comment.comment_id).toBe('number');
-                    expect(typeof comment.votes).toBe('number');
-                    expect(typeof comment.created_at).toBe('string');
-                    expect(typeof comment.author).toBe('string');
-                    expect(typeof comment.body).toBe('string');
-                    expect(typeof comment.article_id).toBe('number');
-                    expect(comment.article_id).toBe(1);
+                    expect(comment).toEqual(expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        body: expect.any(String),
+                        article_id: 1,
+                        author: expect.any(String),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String)
+                    }));
                 });
                 expect(comments).toBeSortedBy('created_at', { descending: true });
             });
@@ -256,21 +261,14 @@ describe('/api/articles/:article_id/comments', () => {
             .expect(201)
             .send(newComment)
             .then(({ body: { comment } }) => {
-                expect(comment).toEqual({
+                expect(comment).toEqual(expect.objectContaining({
                     comment_id: 19,
                     body: 'cant stop, wont stop',
                     article_id: 2,
                     author: 'icellusedkars',
                     votes: 0,
-                    created_at: comment.created_at
-                });
-                expect(Object.keys(comment).length).toBe(6);
-                expect(typeof comment.comment_id).toBe('number');
-                expect(typeof comment.body).toBe('string');
-                expect(typeof comment.article_id).toBe('number');
-                expect(typeof comment.author).toBe('string');
-                expect(typeof comment.votes).toBe('number');
-                expect(typeof comment.created_at).toBe('string');
+                    created_at: expect.any(String)
+                }));
             });
         });
         test('POST:400 responds with an appropriate status code and error message when provided with a malformed request body', () => {
@@ -324,16 +322,29 @@ describe('/api/articles/:article_id/comments', () => {
                 expect(msg).toBe("Resource not found.");
             });
         });
+        test('POST:404 responds with an appropriate status code and error message when provided with a username that does not exist', () => {
+            const newComment = {
+                username: 'notAUsername',
+                body: 'a legitimate comment'
+            };
+
+            return request(app)
+            .post('/api/articles/2/comments')
+            .expect(404)
+            .send(newComment)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            })
+        });
     });
 });
 
 describe('/api/comments/:comments_id', () => {
     describe('DELETE', () => {
         test('DELETE:204 should delete a comment using given parameterised comment_id', () => {
-            const removedCommentId = 1;
 
             return request(app)
-            .delete(`/api/comments/${removedCommentId}`)
+            .delete(`/api/comments/1`)
             .expect(204)
             .then(({ body }) => {
                 expect(body).toEqual({});
@@ -342,7 +353,7 @@ describe('/api/comments/:comments_id', () => {
             .then(({ rows, rowCount }) => {
                 expect(rowCount).toBe(17);
                 rows.forEach((row) => {
-                    expect(row.comment_id).not.toBe(removedCommentId);
+                    expect(row.comment_id).not.toBe(1);
                 });
             });
         });
@@ -374,12 +385,11 @@ describe('/api/users', () => {
             .then(({ body: { users } }) => {
                 expect(users.length).toBe(4);
                 users.forEach((user) => {
-                    expect(user).toHaveProperty('username');
-                    expect(typeof user.username).toBe('string');
-                    expect(user).toHaveProperty('name');
-                    expect(typeof user.name).toBe('string');
-                    expect(user).toHaveProperty('avatar_url');
-                    expect(typeof user.avatar_url).toBe('string');
+                    expect(user).toEqual(expect.objectContaining({
+                        username: expect.any(String),
+                        name: expect.any(String),
+                        avatar_url: expect.any(String)
+                    }));
                 });
             });
         });
