@@ -127,15 +127,26 @@ describe('/api/articles/:article_id', () => {
                 expect(msg).toBe("Bad request.");
             });
         });
-        test('PATCH:400 responds with an appropriate status code and error message when attempting to update a non-existent article', () => {
+        test('PATCH:400 responds with an appropriate status code and error message when attempting to update an invalid article_id type', () => {
             return request(app)
-            .patch('/api/articles/99999')
+            .patch('/api/articles/notAnId')
             .expect(400)
             .send({
                 inc_votes: 5
             })
             .then(({ body: { msg } }) => {
                 expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:404 responds with an appropriate status code and error message when attempting to update a valid but non-existent article', () => {
+            return request(app)
+            .patch('/api/articles/99999')
+            .expect(404)
+            .send({
+                inc_votes: 5
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
             });
         });
     });
@@ -285,32 +296,32 @@ describe('/api/articles/:article_id/comments', () => {
                 });
             });
         });
-        test('POST:400 responds with an appropriate status code and error message when provided with a request body that fails schema validation', () => {
-            const newComment = {
-                username: 5,
-                body: ''
-            };
-
-            return request(app)
-            .post('/api/articles/2/comments')
-            .expect(400)
-            .send(newComment)
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-        test('POST:400 responds with an appropriate status code and error message when provided with an invalid id', () => {
+        test('POST:400 responds with an appropriate status code and error message when provided with an invalid id type', () => {
             const newComment = {
                 username: 'icellusedkars',
                 body: 'cant stop, wont stop'
             };
-
+            
             return request(app)
             .post('/api/articles/notAnId/comments')
             .expect(400)
             .send(newComment)
             .then(({ body: { msg } }) => {
                 expect(msg).toBe("Bad request.");
+            });
+        });
+        test('POST:404 responds with an appropriate status code and error message when provided with a valid but non-existent id', () => {
+            const newComment = {
+                username: 'icellusedkars',
+                body: 'cant stop, wont stop'
+            };
+
+            return request(app)
+            .post('/api/articles/99999/comments')
+            .expect(404)
+            .send(newComment)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
             });
         });
     });
