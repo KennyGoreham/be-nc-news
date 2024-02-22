@@ -1,4 +1,4 @@
-const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId } = require('../models/articles-model.js');
+const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId, insertArticle } = require('../models/articles-model.js');
 const { selectTopicsByTopic } = require('../models/topics-model.js');
 
 exports.getArticleByArticleId = (req, res, next) => {
@@ -72,6 +72,22 @@ exports.patchArticlesByArticleId = (req, res, next) => {
     return Promise.all(promises)
     .then((promiseResolutions) => {
         res.status(200).send({ article: promiseResolutions[0] });
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.postArticle = (req, res, next) => {
+
+    const { body: { article_img_url }, body } = req;
+
+    insertArticle(body, article_img_url)
+    .then((newArticle) => {
+        return selectArticleByArticleId(newArticle.article_id)
+    })
+    .then((article) => {
+        res.status(201).send({ article });
     })
     .catch((err) => {
         next(err);

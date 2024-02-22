@@ -54,6 +54,28 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "posts a new article and serves it up in a new object",
+    "queries": [],
+    "exampleBody": {
+      "author": "Kenny",
+      "title": "How to build a backend",
+      "body": "Sign up to a Northcoders bootcamp!",
+      "topic": "paper",
+      "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+    },
+    "exampleResponse": {
+      "author": "icellusedkars",
+      "title": "How to build a backend",
+      "body": "Sign up to a Northcoders bootcamp!",
+      "topic": "paper",
+      "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      "article_id": 14,
+      "created_at": "2024-02-22T19:58:47.984Z",
+      "votes": 0,
+      "comment_count": 0
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves up an article object that matches the article_id provided",
     "queries": [],
