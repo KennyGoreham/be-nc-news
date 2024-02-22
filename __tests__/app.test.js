@@ -428,7 +428,7 @@ describe('/api/articles/:article_id/comments', () => {
     });
 });
 
-describe('/api/comments/:comments_id', () => {
+describe('/api/comments/:comment_id', () => {
     describe('DELETE', () => {
         test('DELETE:204 should delete a comment using given parameterised comment_id', () => {
 
