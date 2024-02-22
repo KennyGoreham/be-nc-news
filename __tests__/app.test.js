@@ -226,6 +226,62 @@ describe('/api/articles', () => {
             expect(articles).toEqual([]);
         })
     });
+    test('GET:200 responds with an array of objects sorted by given query provided it is a valid column', () => {
+        return request(app)
+        .get('/api/articles?sort_by=title')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles.length).toBe(13);
+            expect(articles).toBeSortedBy('title', { descending: true });
+        })
+        .then(() => {
+            return request(app)
+            .get('/api/articles?sort_by=votes')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles.length).toBe(13);
+                expect(articles).toBeSortedBy('votes', { descending: true });
+            });
+        });
+    });
+    test('GET:200 responds with an array of objects ordered by given query provided it is a valid order', () => {
+        return request(app)
+        .get('/api/articles?order=asc')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles).toBeSortedBy('created_at');
+        });
+    });
+    test('GET:200 responds with an array of objects ordered, sorted and only of a given topic when provided all valid queries', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch&sort_by=comment_count&order=asc')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles.length).toBe(12);
+            expect(articles).toBeSortedBy('comment_count');
+            articles.forEach((article) => {
+                expect(article).toEqual(expect.objectContaining({
+                    topic: 'mitch'
+                }));
+            });
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when attempting a sort_by query that is not a valid column', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch&sort_by=whatever&order=asc')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        });
+    });
+    test('GET:400 responds with an appropriate status code and error message when attempting an invalid ordering query', () => {
+        return request(app)
+        .get('/api/articles?topic=paper&sort_by=author&order=anything')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request.");
+        });
+    });
     test('GET:404 responds with an appropriate status code and error message when attempting to query by a topic which does not exist', () => {
         return request(app)
         .get('/api/articles?topic=dogs')

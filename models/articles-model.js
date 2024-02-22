@@ -21,7 +21,15 @@ exports.selectArticleByArticleId = (articleId) => {
     })
 }
 
-exports.selectArticles = (query) => {
+exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc') => {
+
+    if(!['created_at', 'author', 'title', 'article_id', 'topic', 'votes', 'article_img_url', 'comment_count'].includes(sortBy)) {
+        return Promise.reject({ status: 400, msg: "Bad request."});
+    }
+
+    if(!['asc', 'desc'].includes(order)) {
+        return Promise.reject({ status: 400, msg: "Bad request."});
+    }
 
     let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments) AS comment_count 
     FROM articles 
@@ -29,12 +37,12 @@ exports.selectArticles = (query) => {
 
     const queryValues = [];
 
-    if(query) {
+    if(topic) {
         queryStr += ` WHERE topic=$1`;
-        queryValues.push(query);
+        queryValues.push(topic);
     }
 
-    queryStr += ` GROUP BY articles.article_id ORDER BY articles.created_at DESC`;
+    queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order}`;
 
     return db
     .query(queryStr, queryValues)
