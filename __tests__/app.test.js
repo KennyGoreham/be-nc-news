@@ -55,7 +55,25 @@ describe('/api/articles/:article_id', () => {
             .get('/api/articles/5')
             .expect(200)
             .then(({ body: { article } }) => {
-                expect(article).toEqual({
+                expect(article).toEqual(expect.objectContaining({
+                    article_id: 5,
+                    title: "UNCOVERED: catspiracy to bring down democracy",
+                    topic: "cats",
+                    author: "rogersop",
+                    body: "Bastet walks amongst us, and the cats are taking arms!",
+                    votes: 0,
+                    created_at: '2020-08-03T13:14:00.000Z',
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                  }));
+            });
+        });
+        test(`GET:200 responds with an article object, that includes a 'comment_count' key, where article_id matches given parameterised endpoint`, () => {
+            return request(app)
+            .get('/api/articles/5')
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article).toEqual(expect.objectContaining({
                     article_id: 5,
                     title: "UNCOVERED: catspiracy to bring down democracy",
                     topic: "cats",
@@ -65,10 +83,10 @@ describe('/api/articles/:article_id', () => {
                     created_at: '2020-08-03T13:14:00.000Z',
                     article_img_url:
                       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-                    comment_count: "2"
-                  });
+                    comment_count: 2
+                }));
             });
-        });
+        });       
         test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
             return request(app)
             .get('/api/articles/9999')
@@ -262,7 +280,7 @@ describe('/api/articles/:article_id/comments', () => {
             .then(({ body: { comments } }) => {
                 expect(comments).toEqual([]);
             })
-        }); 
+        });
     });
     describe('POST', () => {
         test('POST:201 adds a comment for an article using parameterised article_id', () => {

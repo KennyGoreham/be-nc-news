@@ -10,10 +10,14 @@ exports.selectArticleByArticleId = (articleId) => {
     return db
     .query(queryStr, [articleId])
     .then(({ rows, rowCount }) => {
-        if(rowCount === 0){
-            return Promise.reject({ status: 404, msg: "Resource not found." });
+        
+        if(rowCount !== 0) {
+            rows[0].comment_count = Number(rows[0].comment_count);
         }
-        return rows[0];
+
+        return rowCount === 0 
+        ? Promise.reject({ status: 404, msg: "Resource not found." })
+        : rows[0];
     })
 }
 
