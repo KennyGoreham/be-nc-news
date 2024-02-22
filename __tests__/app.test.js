@@ -292,7 +292,7 @@ describe('/api/articles', () => {
             });
         });
     });
-    describe.only('POST', () => {
+    describe('POST', () => {
         test('POST:201 responds with a newly created article object that includes the following valid key/value pairs: author, title, body, topic, article_img_url (that will default if not provided), article_id, votes, created_at, comment_count', () => {
             return request(app)
             .post('/api/articles')
