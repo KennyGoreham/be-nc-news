@@ -80,3 +80,25 @@ exports.updateArticlesByArticleId = (votes, article_id) => {
         return rows[0];
     })
 }
+
+exports.insertArticle = (newArticle, articleImgUrl) => {
+
+    let queryStr = `INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url) VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT,`;
+
+    const articleValues = [newArticle.title, newArticle.topic, newArticle.author, newArticle.body];
+
+    if(articleImgUrl) {
+        queryStr += ` $5)`;
+        articleValues.push(articleImgUrl);
+    } else {
+        queryStr += ` DEFAULT)`;
+    }
+
+    queryStr += ` RETURNING *;`;
+
+    return db
+    .query(queryStr, articleValues)
+    .then(({ rows }) => {
+        return rows[0];
+    });
+}
