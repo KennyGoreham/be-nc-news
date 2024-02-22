@@ -463,6 +463,86 @@ describe('/api/comments/:comment_id', () => {
             });
         });
     });
+    describe('PATCH', () => {
+        test('PATCH:200 updates the votes on a comment using its comment_id and responds with the updated comment object', () => {
+            return request(app)
+            .patch('/api/comments/5')
+            .expect(200)
+            .send({ inc_votes: 2 })
+            .then(({ body: { comment } }) => {
+                expect(comment).toEqual(expect.objectContaining({
+                    comment_id: 5,
+                    body: 'I hate streaming noses',
+                    article_id: 1,
+                    author: 'icellusedkars',
+                    votes: 2,
+                    created_at: '2020-11-03T21:00:00.000Z'
+                }));
+            });
+        });
+        test('PATCH:200 updates the votes on a comment using its comment_id if the request body contains excess information but at least votes to increment', () => {
+            return request(app)
+            .patch('/api/comments/5')
+            .expect(200)
+            .send({
+                randomKey: 'randomValue',
+                inc_votes: 3,
+                anotherRandomKey: 67
+            })
+            .then(({ body: { comment } }) => {
+                expect(comment).toEqual(expect.objectContaining({
+                    comment_id: 5,
+                    body: 'I hate streaming noses',
+                    article_id: 1,
+                    author: 'icellusedkars',
+                    votes: 3,
+                    created_at: '2020-11-03T21:00:00.000Z'
+                }));
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when provided a malformed body', () => {
+            return request(app)
+            .patch('/api/comments/5')
+            .expect(400)
+            .send({})
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when attempting to update value with invalid type', () => {
+            return request(app)
+            .patch('/api/comments/5')
+            .expect(400)
+            .send({
+                inc_votes: 'notANumber'
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when provided with an invalid id type', () => {
+            return request(app)
+            .patch('/api/comments/notAnId')
+            .expect(400)
+            .send({
+                inc_votes: 2
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:404 responds with an appropriate status code and error message when provided with a valid but non-existent id', () => {
+            return request(app)
+            .patch('/api/comments/99999')
+            .expect(404)
+            .send({
+                inc_votes: 2
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
 });
 
 describe('/api/users', () => {
