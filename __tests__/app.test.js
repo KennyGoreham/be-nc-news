@@ -484,3 +484,28 @@ describe('/api/users', () => {
         });
     });
 });
+
+describe('/api/users/:username', () => {
+    describe('GET', () => {
+        test('GET:200 responds with a user object using given parameterised endpoint', () => {
+            return request(app)
+            .get('/api/users/butter_bridge')
+            .expect(200)
+            .then(({ body: { user } }) => {
+                expect(user).toEqual(expect.objectContaining({
+                    username: 'butter_bridge',
+                    name: 'jonny',
+                    avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+                }));
+            });
+        });
+        test('GET:404 responds with an appropriate status code and error message when attempting to find a username that does not exist', () => {
+            return request(app)
+            .get('/api/users/notAUsername')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
+});
