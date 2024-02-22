@@ -1,4 +1,4 @@
-const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId } = require('../models/articles-model.js');
+const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId } = require('../models/articles-model.js');
 const { selectTopicsByTopic } = require('../models/topics-model.js');
 
 exports.getArticleByArticleId = (req, res, next) => {
@@ -26,6 +26,38 @@ exports.getArticles = (req, res, next) => {
     return Promise.all(promises)
     .then((promiseResolutions) => {
         res.status(200).send({ articles: promiseResolutions[0] });
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.getCommentsByArticleId = (req, res, next) => {
+
+    const { article_id } = req.params;
+
+    const promises = [selectCommentsByArticleId(article_id), selectArticleByArticleId(article_id)];
+    
+    return Promise.all(promises)
+    .then((promiseResolutions) => {
+        if(promiseResolutions[0].length === 0) {
+            res.status(200).send({ comments: [] });
+        } else {
+            res.status(200).send({ comments: promiseResolutions[0] });
+        }
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.postCommentByArticleId = (req, res, next) => {
+
+    const { body, params: { article_id } } = req;
+
+    insertCommentByArticleId(body, article_id)
+    .then((comment) => {
+        res.status(201).send({ comment });
     })
     .catch((err) => {
         next(err);
