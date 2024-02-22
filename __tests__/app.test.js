@@ -171,7 +171,7 @@ describe('/api/articles', () => {
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     article_img_url: expect.any(String),
-                    comment_count: expect.any(String)
+                    comment_count: expect.any(Number)
                 }));
                 expect(article).toEqual(expect.not.objectContaining({
                     body: expect.any(String)
@@ -180,36 +180,40 @@ describe('/api/articles', () => {
             expect(articles).toBeSortedBy('created_at', { descending: true });
         });
     });
-    test(`GET:200 responds with an array of article objects which should include a 'comment_count' key but not a 'body' key, and be sorted by a 'topic' query`, () => {
+    test('GET:200 responds with an array of article objects filtered by a topic query', () => {
         return request(app)
-        .get('/api/articles?sort_by=topic')
+        .get('/api/articles?topic=mitch')
         .expect(200)
         .then(({ body: { articles } }) => {
-            expect(articles.length).toBe(13);
-            expect(articles).toBeSortedBy('topic', { descending: true });
+            expect(articles.length).toBe(12);
             articles.forEach((article) => {
                 expect(article).toEqual(expect.objectContaining({
-                    author: expect.any(String),
                     title: expect.any(String),
+                    topic: 'mitch',
                     article_id: expect.any(Number),
-                    topic: expect.any(String),
+                    author: expect.any(String),
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     article_img_url: expect.any(String),
-                    comment_count: expect.any(String)
-                }));
-                expect(article).toEqual(expect.not.objectContaining({
-                    body: expect.any(String)
+                    comment_count: expect.any(Number)
                 }));
             });
         });
     });
-    test('GET:400 responds with an appropriate status code and error message when given an invalid sorting query', () => {
+    test('GET:200 responds with an empty array when given a topic query that exists in the database but has no relation to any article', () => {
         return request(app)
-        .get('/api/articles?sort_by=9')
-        .expect(400)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles).toEqual([]);
+        })
+    });
+    test('GET:404 responds with an appropriate status code and error message when attempting to query by a topic which does not exist', () => {
+        return request(app)
+        .get('/api/articles?topic=dogs')
+        .expect(404)
         .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request.");
+            expect(msg).toBe("Resource not found.");
         });
     });
 });

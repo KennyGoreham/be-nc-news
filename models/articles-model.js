@@ -1,7 +1,7 @@
 const db = require("../db/connection.js");
 
 exports.selectArticleByArticleId = (articleId) => {
-    
+
     let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments) AS comment_count 
     FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id 
@@ -17,22 +17,27 @@ exports.selectArticleByArticleId = (articleId) => {
     })
 }
 
-exports.selectArticles = (sortBy = 'created_at') => {
-
-    if(!['created_at', 'topic'].includes(sortBy)) {
-        return Promise.reject({ status: 400, msg: "Bad request."});
-    }
+exports.selectArticles = (query) => {
 
     let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments) AS comment_count 
     FROM articles 
-    LEFT JOIN comments ON articles.article_id = comments.article_id 
-    GROUP BY articles.article_id`;
+    LEFT JOIN comments ON articles.article_id = comments.article_id`; 
 
-    queryStr += ` ORDER BY ${sortBy} DESC`;
+    const queryValues = [];
+
+    if(query) {
+        queryStr += ` WHERE topic=$1`;
+        queryValues.push(query);
+    }
+
+    queryStr += ` GROUP BY articles.article_id ORDER BY articles.created_at DESC`;
 
     return db
-    .query(queryStr)
+    .query(queryStr, queryValues)
     .then(({ rows }) => {
+        rows.forEach((row) => {
+            row.comment_count = Number(row.comment_count);
+        })
         return rows;
     })
 }

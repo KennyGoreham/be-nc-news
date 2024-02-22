@@ -1,9 +1,10 @@
 const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId } = require('../models/articles-model.js');
+const { selectTopicsByTopic } = require('../models/topics-model.js');
 
 exports.getArticleByArticleId = (req, res, next) => {
 
     const { article_id } = req.params;
-    
+
     selectArticleByArticleId(article_id)
     .then((article) => {
         res.status(200).send({ article });
@@ -15,11 +16,16 @@ exports.getArticleByArticleId = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
 
-    const { sort_by } = req.query;
+    const { topic } = req.query;
+    const promises = [selectArticles(topic)];
 
-    selectArticles(sort_by)
-    .then((articles) => {
-        res.status(200).send({ articles });
+    if(topic) {
+        promises.push(selectTopicsByTopic(topic));
+    }
+
+    return Promise.all(promises)
+    .then((promiseResolutions) => {
+        res.status(200).send({ articles: promiseResolutions[0] });
     })
     .catch((err) => {
         next(err);

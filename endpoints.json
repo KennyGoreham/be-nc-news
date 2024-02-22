@@ -25,20 +25,31 @@
   "GET /api/articles": {
     "description": "serves an array of all articles sorted by most recent in descending order by default",
     "queries": [
-      { "sort_by": ["topic"] }
+      "topic"
     ],
     "exampleBody": {},
     "exampleResponse": {
       "articles": [
         {
-          "author": "weegembump",
-          "title": "Seafood substitutions are increasing",
-          "article_id": 2,
-          "topic": "cooking",
-          "created_at": "2018-05-30T15:59:13.341Z",
+          "author": "butter_bridge",
+          "title": "Living in the shadow of a great man",
+          "article_id": 1,
+          "topic": "mitch",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "votes": 100,
+          "article_img_url":
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": "11"
+        },
+        {
+          "author": "icellusedkars",
+          "title": "Z",
+          "article_id": 7,
+          "topic": "mitch",
+          "created_at": "2020-01-07T14:08:00.000Z",
           "votes": 0,
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 6
+          "comment_count": "0"
         }
       ]
     }
