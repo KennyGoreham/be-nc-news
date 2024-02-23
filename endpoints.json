@@ -25,7 +25,7 @@
   "GET /api/articles": {
     "description": "serves an array of all articles sorted by most recent in descending order by default",
     "queries": [
-      "topic", "sort_by", "order"
+      "topic", "sort_by", "order", "limit", "p"
     ],
     "exampleBody": {},
     "exampleResponse": {

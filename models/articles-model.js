@@ -21,35 +21,50 @@ exports.selectArticleByArticleId = (articleId) => {
     })
 }
 
-exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc') => {
+exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 10, page = 1) => {
 
     if(!['created_at', 'author', 'title', 'article_id', 'topic', 'votes', 'article_img_url', 'comment_count'].includes(sortBy)) {
-        return Promise.reject({ status: 400, msg: "Bad request."});
+        return Promise.reject({ status: 400, msg: "Bad request." });
     }
 
     if(!['asc', 'desc'].includes(order)) {
-        return Promise.reject({ status: 400, msg: "Bad request."});
+        return Promise.reject({ status: 400, msg: "Bad request." });
     }
 
-    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments) AS comment_count 
+    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments) AS comment_count, COUNT(*) OVER() AS total_count 
     FROM articles 
     LEFT JOIN comments ON articles.article_id = comments.article_id`; 
 
     const queryValues = [];
 
     if(topic) {
-        queryStr += ` WHERE topic=$1`;
         queryValues.push(topic);
+        queryStr += ` WHERE topic=$${queryValues.length}`;
     }
 
     queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order}`;
 
+    queryValues.push(limit)
+    queryStr += ` LIMIT $${queryValues.length}`;
+
+    let offset = 0;
+
+    if(page !== 1) {
+        offset = (page - 1) * limit
+    }
+
+    queryValues.push(offset);
+    queryStr += ` OFFSET $${queryValues.length}`;
+
     return db
     .query(queryStr, queryValues)
     .then(({ rows }) => {
+
         rows.forEach((row) => {
+            row.total_count = Number(row.total_count);
             row.comment_count = Number(row.comment_count);
-        })
+        });
+
         return rows;
     })
 }
