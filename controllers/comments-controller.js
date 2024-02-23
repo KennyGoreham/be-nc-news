@@ -6,11 +6,13 @@ exports.removeCommentByCommentId = (req, res, next) => {
     
     deleteCommentByCommentId(comment_id)
     .then(() => {
+
         res.status(204).send({});
     })
     .catch((err) => {
+
         next(err);
-    })
+    });
 }
 
 exports.patchCommentByCommentId = (req, res, next) => {
@@ -19,9 +21,11 @@ exports.patchCommentByCommentId = (req, res, next) => {
 
     updateCommentByCommentId(comment_id, inc_votes)
     .then((comment) => {
+
         res.status(200).send({ comment });
     })
     .catch((err) => {
+        
         next(err);
     });
 }
