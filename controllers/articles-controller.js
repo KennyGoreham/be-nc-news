@@ -16,8 +16,8 @@ exports.getArticleByArticleId = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
 
-    const { topic, sort_by, order } = req.query;
-    const promises = [selectArticles(topic, sort_by, order)];
+    const { topic, sort_by, order, limit, p} = req.query;
+    const promises = [selectArticles(topic, sort_by, order, limit, p)];
 
     if(topic) {
         promises.push(selectTopicsByTopic(topic));
@@ -25,7 +25,10 @@ exports.getArticles = (req, res, next) => {
 
     return Promise.all(promises)
     .then((promiseResolutions) => {
-        res.status(200).send({ articles: promiseResolutions[0] });
+
+        promiseResolutions[0].length === 0 && promiseResolutions[1] === undefined
+        ? res.status(404).send({ msg: "Resource not found." })
+        : res.status(200).send({ articles: promiseResolutions[0] });
     })
     .catch((err) => {
         next(err);
