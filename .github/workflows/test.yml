@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: clone repo and checkout main
         uses: actions/checkout@v4
+      - name: use Node.js
+        uses: actions/setup-node@v4
+          with:
+            node-version: 20
       - name: install dependencies
         run: npm install
       - name: run tests
@@ -20,6 +24,10 @@ jobs:
     steps:
       - name: clone repo and checkout main
         uses: actions/checkout@v4
+      - name: use Node.js
+        uses: actions/setup-node@v4
+          with:
+            node-version: 20
       - name: install dependencies
         run: npm install
       - name: setup of psql
@@ -36,6 +44,10 @@ jobs:
     steps:
       - name: clone repo and checkout main
         uses: actions/checkout@v4
+      - name: use Node.js
+        uses: actions/setup-node@v4
+          with:
+            node-version: 20
       - name: install dependencies
         run: npm install
       - name: run test
