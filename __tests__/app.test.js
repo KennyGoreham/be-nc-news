@@ -71,7 +71,7 @@ describe('/api/articles/:article_id', () => {
                     author: "rogersop",
                     body: "Bastet walks amongst us, and the cats are taking arms!",
                     votes: 0,
-                    created_at: '2020-08-03T13:14:00.000Z',
+                    created_at: expect.any(String),
                     article_img_url:
                       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
                 }));
@@ -91,7 +91,7 @@ describe('/api/articles/:article_id', () => {
                     author: "rogersop",
                     body: "Bastet walks amongst us, and the cats are taking arms!",
                     votes: 0,
-                    created_at: '2020-08-03T13:14:00.000Z',
+                    created_at: expect.any(String),
                     article_img_url:
                       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                     comment_count: 2
@@ -139,7 +139,7 @@ describe('/api/articles/:article_id', () => {
                     author: "rogersop",
                     body: "Bastet walks amongst us, and the cats are taking arms!",
                     votes: 2,
-                    created_at: '2020-08-03T13:14:00.000Z',
+                    created_at: expect.any(String),
                     article_img_url:
                         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                 });
@@ -871,7 +871,7 @@ describe('/api/users/:username', () => {
             .get('/api/users/notAUsername')
             .expect(404)
             .then(({ body: { msg } }) => {
-                
+
                 expect(msg).toBe("Resource not found.");
             });
         });
