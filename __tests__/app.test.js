@@ -535,14 +535,14 @@ describe('/api/articles', () => {
 
 describe('/api/articles/:article_id/comments', () => {
     describe('GET', () => {
-        test(`GET:200 responds with an array of comments pertaining to a parameterised article_id, ordering by most recent ('created_at') first ('desc')`, () => {
+        test(`GET:200 responds with an array of comment objects pertaining to a parameterised article_id, ordering by most recent ('created_at') first ('desc')`, () => {
 
             return request(app)
             .get('/api/articles/1/comments')
             .expect(200)
             .then(({ body: { comments } }) => {
 
-                expect(comments.length).toBe(11);
+                expect(comments.length).toBeGreaterThan(0);
                 comments.forEach((comment) => {
 
                     expect(comment).toEqual(expect.objectContaining({
@@ -557,14 +557,55 @@ describe('/api/articles/:article_id/comments', () => {
                 expect(comments).toBeSortedBy('created_at', { descending: true });
             });
         });
-        test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
+        test('GET:200 responds with an empty array when given an id that has no comments', () => {
 
             return request(app)
-            .get('/api/articles/99999/comments')
-            .expect(404)
+            .get('/api/articles/13/comments')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+
+                expect(comments).toEqual([]);
+            });
+        });
+        test(`GET:200 responds with an array of comment pertaining to a parameterised article_id paginated by 'limit' and 'p' queries`, () => {
+            
+            return request(app)
+            .get('/api/articles/1/comments?limit=5&p=2')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+
+                expect(comments.length).toBe(5);
+                expect(comments[0].comment_id).toBe(8);
+            });
+        });
+        test('GET:200 responds with every comment object in the table that matches the article_id given when given a limit query that is greater than the number of results ', () => {
+            
+            return request(app)
+            .get('/api/articles/1/comments?limit=99999')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+
+                expect(comments.length).toBe(11);
+            });
+        });
+        test('GET:400 responds with an appropriate status code and error message when attempting an invalid limit query', () => {
+            
+            return request(app)
+            .get('/api/articles/1/comments?limit=notANumber')
+            .expect(400)
             .then(({ body: { msg } }) => {
 
-                expect(msg).toBe("Resource not found.");
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('GET:400 responds with an appropriate status code and error message when attempting an invalid page query', () => {
+            
+            return request(app)
+            .get('/api/articles/1/comments?p=notANumber')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+
+                expect(msg).toBe("Bad request.");
             });
         });
         test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
@@ -577,15 +618,25 @@ describe('/api/articles/:article_id/comments', () => {
                 expect(msg).toBe("Bad request.");
             });
         });
-        test('GET:200 responds with an appropriate status code when given an id that has no comments', () => {
+        test('GET:404 responds with an appropriate status code and error message when attempting to query a page that does not contain any results', () => {
+            
+            return request(app)
+            .get('/api/articles/1/comments?limit=5&p=99999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+        test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
 
             return request(app)
-            .get('/api/articles/13/comments')
-            .expect(200)
-            .then(({ body: { comments } }) => {
+            .get('/api/articles/99999/comments')
+            .expect(404)
+            .then(({ body: { msg } }) => {
 
-                expect(comments).toEqual([]);
-            })
+                expect(msg).toBe("Resource not found.");
+            });
         });
     });
     describe('POST', () => {

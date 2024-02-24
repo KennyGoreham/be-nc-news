@@ -41,15 +41,14 @@ exports.getArticles = (req, res, next) => {
 exports.getCommentsByArticleId = (req, res, next) => {
 
     const { article_id } = req.params;
+    const { limit, p } = req.query;
 
-    const promises = [selectCommentsByArticleId(article_id), selectArticleByArticleId(article_id)];
+    const promises = [selectCommentsByArticleId(article_id, limit, p), selectArticleByArticleId(article_id)];
     
     return Promise.all(promises)
     .then((promiseResolutions) => {
-
-        promiseResolutions[0].length === 0
-        ? res.status(200).send({ comments: [] })
-        : res.status(200).send({ comments: promiseResolutions[0] });
+        
+        res.status(200).send({ comments: promiseResolutions[0] });
     })
     .catch((err) => {
 
