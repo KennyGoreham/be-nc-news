@@ -94,7 +94,9 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves up an array of comment objects that matches the article_id provided, sorted by most recent",
-    "queries": [],
+    "queries": [
+      "limit", "p"
+    ],
     "exampleBody": {},
     "exampleResponse": {
       "comment_id": 9,

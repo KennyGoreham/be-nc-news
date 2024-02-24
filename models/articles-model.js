@@ -44,7 +44,7 @@ exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 
 
     queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order}`;
 
-    queryValues.push(limit)
+    queryValues.push(limit);
     queryStr += ` LIMIT $${queryValues.length}`;
 
     let offset = 0;
@@ -69,14 +69,40 @@ exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 
     });
 }
 
-exports.selectCommentsByArticleId = (article_id) => {
+exports.selectCommentsByArticleId = (article_id, limit = 10, page = 1) => {
     
     return db
-    .query(`SELECT * FROM comments WHERE article_id=$1 ORDER BY created_at DESC;`, [article_id])
-    .then(({ rows }) => {
+    .query(`SELECT * FROM comments WHERE article_id=$1;`, [article_id])
+    .then(({ rowCount }) => {
 
-        return rows;
-    });
+        if(rowCount !== 0) {
+            if(Math.ceil(rowCount / limit) < page) {
+                return Promise.reject({ status: 404, msg: "Resource not found." });
+            }
+        }
+
+        let queryStr = `SELECT *, COUNT(*) OVER() AS total_count FROM comments WHERE article_id=$1 ORDER BY created_at DESC`;
+        
+        const queryValues = [article_id];
+        
+        queryValues.push(limit);
+        queryStr += ` LIMIT $2`;
+        
+        let offset = 0;
+        
+        if(page !== 1) {
+            offset = (page - 1) * limit;
+        }
+        
+        queryValues.push(offset);
+        queryStr += ` OFFSET $3`;
+        
+        return db
+        .query(queryStr, queryValues)
+        })
+        .then(({ rows }) => {
+            return rows;
+        });
 }
 
 exports.insertCommentByArticleId = (comment, article_id) => {
