@@ -127,7 +127,6 @@ describe('/*', () => {
         .get('/notARoute')
         .expect(404)
         .then(({ body: { msg } }) => {
-
             expect(msg).toBe("Path not found.");
         });
     });
@@ -140,7 +139,6 @@ describe('/api', () => {
         .get('/api')
         .expect(200)
         .then(({ body: { apiDocs } }) => {
-
             expect(apiDocs).toEqual(apiEndpoints);
         });
     });
@@ -195,7 +193,6 @@ describe('/api/articles/:article_id', () => {
             .get('/api/articles/9999')
             .expect(404)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -205,7 +202,6 @@ describe('/api/articles/:article_id', () => {
             .get('/api/articles/notAnId')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -243,7 +239,6 @@ describe('/api/articles/:article_id', () => {
             .expect(400)
             .send({})
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -256,7 +251,6 @@ describe('/api/articles/:article_id', () => {
                 inc_votes: 'hello'
             })
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -269,7 +263,6 @@ describe('/api/articles/:article_id', () => {
                 inc_votes: 5
             })
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -282,7 +275,6 @@ describe('/api/articles/:article_id', () => {
                 inc_votes: 5
             })
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -316,7 +308,6 @@ describe('/api/articles', () => {
                         body: expect.any(String)
                     }));
                 });
-
                 expect(articles).toBeSortedBy('created_at', { descending: true });
             });
         });
@@ -349,7 +340,6 @@ describe('/api/articles', () => {
             .get('/api/articles?topic=paper')
             .expect(200)
             .then(({ body: { articles } }) => {
-
                 expect(articles).toEqual([]);
             });
         });
@@ -381,7 +371,6 @@ describe('/api/articles', () => {
             .get('/api/articles?order=asc')
             .expect(200)
             .then(({ body: { articles } }) => {
-
                 expect(articles).toBeSortedBy('created_at');
             });
         });
@@ -408,7 +397,6 @@ describe('/api/articles', () => {
             .get('/api/articles?limit=5&p=1')
             .expect(200)
             .then(({ body: { articles } }) => {
-
                 expect(articles.length).toBe(5);
             });
         });
@@ -421,11 +409,10 @@ describe('/api/articles', () => {
 
                 expect(articles.length).toBeGreaterThan(0);
                 articles.forEach((article) => {
-
                     expect(article.total_count).toBe(13);
                 });
             })
-             .then(() => {
+            .then(() => {
 
                 return request(app)
                 .get('/api/articles?topic=mitch')
@@ -447,7 +434,6 @@ describe('/api/articles', () => {
             .get('/api/articles?limit=99999')
             .expect(200)
             .then(({ body: { articles } }) => {
-
                 expect(articles[0].total_count).toBe(articles.length);
             });
         });
@@ -457,7 +443,6 @@ describe('/api/articles', () => {
             .get('/api/articles?topic=mitch&sort_by=whatever&order=asc')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -467,7 +452,6 @@ describe('/api/articles', () => {
             .get('/api/articles?topic=paper&sort_by=author&order=anything')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -477,7 +461,6 @@ describe('/api/articles', () => {
             .get('/api/articles?limit=notANumber')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -487,7 +470,6 @@ describe('/api/articles', () => {
             .get('/api/articles?p=notANumber')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -497,7 +479,6 @@ describe('/api/articles', () => {
             .get('/api/articles?p=9999')
             .expect(404)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -507,7 +488,6 @@ describe('/api/articles', () => {
             .get('/api/articles?topic=dogs')
             .expect(404)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -602,7 +582,6 @@ describe('/api/articles', () => {
             .expect(400)
             .send({})
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -617,7 +596,6 @@ describe('/api/articles', () => {
                 body: 'Another interesting body'
             })
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -654,7 +632,6 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/13/comments')
             .expect(200)
             .then(({ body: { comments } }) => {
-
                 expect(comments).toEqual([]);
             });
         });
@@ -675,7 +652,6 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/1/comments?limit=99999')
             .expect(200)
             .then(({ body: { comments } }) => {
-
                 expect(comments.length).toBe(11);
             });
         });
@@ -685,7 +661,6 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/1/comments?limit=notANumber')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -695,7 +670,6 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/1/comments?p=notANumber')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -705,7 +679,6 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/notAnId/comments')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -715,7 +688,6 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/1/comments?limit=5&p=99999')
             .expect(404)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -725,7 +697,6 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/99999/comments')
             .expect(404)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -765,7 +736,6 @@ describe('/api/articles/:article_id/comments', () => {
             .expect(400)
             .send(newComment1)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             })
             .then(() => {
@@ -775,7 +745,6 @@ describe('/api/articles/:article_id/comments', () => {
                 .expect(400)
                 .send({})
                 .then(({ body: { msg } }) => {
-
                     expect(msg).toBe("Bad request.");
                 });
             });
@@ -792,7 +761,6 @@ describe('/api/articles/:article_id/comments', () => {
             .expect(400)
             .send(newComment)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -808,7 +776,6 @@ describe('/api/articles/:article_id/comments', () => {
             .expect(404)
             .send(newComment)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -824,7 +791,6 @@ describe('/api/articles/:article_id/comments', () => {
             .expect(404)
             .send(newComment)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -848,7 +814,6 @@ describe('/api/comments/:comment_id', () => {
 
                 expect(rowCount).toBe(17);
                 rows.forEach((row) => {
-
                     expect(row.comment_id).not.toBe(1);
                 });
             });
@@ -859,7 +824,6 @@ describe('/api/comments/:comment_id', () => {
             .delete('/api/comments/99999')
             .expect(404)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -869,7 +833,6 @@ describe('/api/comments/:comment_id', () => {
             .delete('/api/comments/notAnId')
             .expect(400)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -922,7 +885,6 @@ describe('/api/comments/:comment_id', () => {
             .expect(400)
             .send({})
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -935,7 +897,6 @@ describe('/api/comments/:comment_id', () => {
                 inc_votes: 'notANumber'
             })
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -948,7 +909,6 @@ describe('/api/comments/:comment_id', () => {
                 inc_votes: 2
             })
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Bad request.");
             });
         });
@@ -961,7 +921,6 @@ describe('/api/comments/:comment_id', () => {
                 inc_votes: 2
             })
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });
@@ -1013,7 +972,6 @@ describe('/api/users/:username', () => {
             .get('/api/users/notAUsername')
             .expect(404)
             .then(({ body: { msg } }) => {
-
                 expect(msg).toBe("Resource not found.");
             });
         });

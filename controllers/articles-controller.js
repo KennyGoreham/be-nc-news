@@ -7,11 +7,9 @@ exports.getArticleByArticleId = (req, res, next) => {
 
     selectArticleByArticleId(article_id)
     .then((article) => {
-
         res.status(200).send({ article });
     })
     .catch((err) => {
-
         next(err);
     });
 }
@@ -33,7 +31,6 @@ exports.getArticles = (req, res, next) => {
         : res.status(200).send({ articles: promiseResolutions[0] });
     })
     .catch((err) => {
-
         next(err);
     });
 }
@@ -47,11 +44,9 @@ exports.getCommentsByArticleId = (req, res, next) => {
     
     return Promise.all(promises)
     .then((promiseResolutions) => {
-        
         res.status(200).send({ comments: promiseResolutions[0] });
     })
     .catch((err) => {
-
         next(err);
     });
 }
@@ -62,11 +57,9 @@ exports.postCommentByArticleId = (req, res, next) => {
 
     insertCommentByArticleId(body, article_id)
     .then((comment) => {
-
         res.status(201).send({ comment });
     })
     .catch((err) => {
-
         next(err);
     });
 }
@@ -78,11 +71,9 @@ exports.patchArticlesByArticleId = (req, res, next) => {
 
     return Promise.all(promises)
     .then((promiseResolutions) => {
-
         res.status(200).send({ article: promiseResolutions[0] });
     })
     .catch((err) => {
-
         next(err);
     });
 }
@@ -93,15 +84,12 @@ exports.postArticle = (req, res, next) => {
 
     insertArticle(body, article_img_url)
     .then((newArticle) => {
-
         return selectArticleByArticleId(newArticle.article_id);
     })
     .then((article) => {
-
         res.status(201).send({ article });
     })
     .catch((err) => {
-
         next(err);
     });
 }
