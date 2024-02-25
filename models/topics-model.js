@@ -23,3 +23,14 @@ exports.selectTopicsByTopic = (topic) => {
         return rows;
     });
 }
+
+exports.insertTopic = (slug, description) => {
+
+    let QueryStr = `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *;`;
+
+    return db.
+    query(QueryStr, [slug, description])
+    .then(({ rows }) => {
+        return rows[0];
+    });
+}
