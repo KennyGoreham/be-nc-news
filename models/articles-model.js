@@ -64,7 +64,6 @@ exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 
             row.total_count = Number(row.total_count);
             row.comment_count = Number(row.comment_count);
         });
-
         return rows;
     });
 }
@@ -110,7 +109,6 @@ exports.insertCommentByArticleId = (comment, article_id) => {
     return db
     .query(`INSERT INTO comments (body, author, article_id, votes, created_at) VALUES ($1, $2, $3, DEFAULT, DEFAULT) RETURNING *;`, [comment.body, comment.username, article_id])
     .then(({ rows }) => {
-
         return rows[0];
     });
 }
@@ -120,7 +118,6 @@ exports.updateArticlesByArticleId = (votes, article_id) => {
     return db
     .query(`UPDATE articles SET votes=votes + $1 WHERE article_id=$2 RETURNING *`, [votes, article_id])
     .then(({ rows }) => {
-
         return rows[0];
     });
 }
@@ -143,7 +140,6 @@ exports.insertArticle = (newArticle, articleImgUrl) => {
     return db
     .query(queryStr, articleValues)
     .then(({ rows }) => {
-        
         return rows[0];
     });
 }
