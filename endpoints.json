@@ -22,6 +22,18 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "posts a new topic and serves it up in an object",
+    "queries": [],
+    "exampleBody": {
+      "slug": "topic name here",
+      "description": "description here"
+    },
+    "exampleResponse": {
+      "slug": "topic name here",
+      "description": "description here"
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles sorted by most recent in descending order by default",
     "queries": [

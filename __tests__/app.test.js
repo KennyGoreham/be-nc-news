@@ -10,20 +10,111 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe('/api/topics', () => {
-    test('GET:200 responds with an array of topic objects', () => {
-
-        return request(app)
-        .get('/api/topics')
-        .expect(200)
-        .then(({ body: { topics } }) => {
-
-            expect(topics.length).toBe(3);
-            topics.forEach((topic) => {
+    describe('GET', () => {
+        test('GET:200 responds with an array of topic objects', () => {
+    
+            return request(app)
+            .get('/api/topics')
+            .expect(200)
+            .then(({ body: { topics } }) => {
+    
+                expect(topics.length).toBe(3);
+                topics.forEach((topic) => {
+    
+                    expect(topic).toEqual(expect.objectContaining({
+                        description: expect.any(String),
+                        slug: expect.any(String)
+                    }));
+                });
+            });
+        });
+    });
+    describe('POST', () => {
+        test('POST:201 responds with a topic object containing the newly created topic', () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(201)
+            .send({
+                slug: 'topic-name-here',
+                description: 'description-here'
+            })
+            .then(({ body: { topic } }) => {
 
                 expect(topic).toEqual(expect.objectContaining({
-                    description: expect.any(String),
-                    slug: expect.any(String)
+                    slug: 'topic-name-here',
+                    description: 'description-here'
                 }));
+            });
+        });
+        test(`POST:201 responds with a topic object containing the newly created topic when request body contains excess information but at least a 'slug' and 'description' field`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(201)
+            .send({
+                randomKey: 'randomKeyValue',
+                slug: 'topic-name-here',
+                anotherRandomKey: 78,
+                description: 'description-here',
+                yetAnotherRandomKey: [1, 2, 4]
+            })
+            .then(({ body: { topic } }) => {
+                
+                expect(topic).toEqual(expect.objectContaining({
+                    slug: 'topic-name-here',
+                    description: 'description-here'
+                }));
+            });
+        });
+        test(`POST:201 responds wth a topic object containing only a 'slug' key when provided a body with no 'description' field`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(201)
+            .send({
+                slug: 'topic-name-here'
+            })
+            .then(({ body: { topic } }) => {
+
+                expect(topic).toEqual(expect.objectContaining({
+                    slug: 'topic-name-here'
+                }));
+            });
+        });
+        test('POST:400 responds with an appropriate status code and error message when provided a malformed body', () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send({})
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test(`POST:400 responds with an appropriate status code and error message when provided a body with a missing 'slug' field`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send({
+                description: 'description-here'
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            })
+        });
+        test(`POST:400 responds with an appropriate status code and error message when provided with a 'slug' field that already exists in the database`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send({
+                slug: 'mitch',
+                description: 'the man, the Mitch, the legend'
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
             });
         });
     });

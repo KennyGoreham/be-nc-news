@@ -5,7 +5,7 @@ exports.handleNonExistentEndpoints = (req, res, next) => {
 
 exports.handlePSQLErrors = (err, req, res, next) => {
 
-    if(err.code === '22P02' || err.code === '23502') {
+    if(err.code === '22P02' || err.code === '23502' || err.code === '23505') {
         res.status(400).send({ msg: "Bad request." });
     }
     else if(err.code === '23503') {
@@ -27,6 +27,5 @@ exports.handleCustomErrors = (err, req, res, next) => {
 }
 
 exports.handleServerErrors = (err, req, res, next) => {
-
     res.status(500).send("Internal server error.");
 }
