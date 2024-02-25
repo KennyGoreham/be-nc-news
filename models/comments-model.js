@@ -23,3 +23,12 @@ exports.updateCommentByCommentId = (commentId, votes) => {
         : rows[0];
     });
 }
+
+exports.deleteCommentByArticleId = (articleId) => {
+
+    return db
+    .query(`DELETE FROM comments WHERE article_id=$1 RETURNING *`, [articleId])
+    .then(() => {
+        return;
+    });
+}

@@ -199,5 +199,11 @@
       "name": "jonny",
       "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article and all its comments using its article_id",
+    "queries": [],
+    "exampleBody": {},
+    "exampleResponse": {}
   }
 }
