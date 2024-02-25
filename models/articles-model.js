@@ -143,3 +143,15 @@ exports.insertArticle = (newArticle, articleImgUrl) => {
         return rows[0];
     });
 }
+
+exports.deleteArticleByArticleId = (articleId) => {
+
+    return db
+    .query(`DELETE FROM articles WHERE article_id=$1 RETURNING *`, [articleId])
+    .then(({ rowCount }) => {
+        
+        if(rowCount === 0) {
+            return Promise.reject({ status: 404, msg: "Resource not found." });
+        }
+    });
+}

@@ -1,4 +1,5 @@
-const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId, insertArticle } = require('../models/articles-model.js');
+const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId, insertArticle, deleteArticleByArticleId } = require('../models/articles-model.js');
+const { deleteCommentByArticleId } = require('../models/comments-model.js');
 const { selectTopicsByTopic } = require('../models/topics-model.js');
 
 exports.getArticleByArticleId = (req, res, next) => {
@@ -88,6 +89,20 @@ exports.postArticle = (req, res, next) => {
     })
     .then((article) => {
         res.status(201).send({ article });
+    })
+    .catch((err) => {
+        next(err);
+    });
+}
+
+exports.removeArticleByArticleId = (req, res, next) => {
+
+    const { params: { article_id } } = req;
+    const promises = [deleteCommentByArticleId(article_id), deleteArticleByArticleId(article_id)]
+    
+    return Promise.all(promises)
+    .then(() => {
+        res.status(204).send({});
     })
     .catch((err) => {
         next(err);

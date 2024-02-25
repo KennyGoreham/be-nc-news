@@ -279,6 +279,73 @@ describe('/api/articles/:article_id', () => {
             });
         });
     });
+    describe('DELETE', () => {
+        test('DELETE:204 removes an article that has no comments using given parameterised id', () => {
+            
+            return request(app)
+            .delete('/api/articles/2')
+            .expect(204)
+            .then(({ body }) => {
+
+                expect(body).toEqual({});
+
+                return db
+                .query('SELECT * FROM articles;')
+            })
+            .then(({ rows, rowCount }) => {
+
+                expect(rowCount).toBeGreaterThan(0);
+                rows.forEach((row) => {
+                    expect(row.article_id).not.toBe(2);
+                });
+            });
+        });
+        test('DELETE:204 removes an article and any comments it has using given parameterised id', () => {
+            
+            return request(app)
+            .delete('/api/articles/1')
+            .expect(204)
+            .then(({ body }) => {
+
+                expect(body).toEqual({});
+
+                return db
+                .query('SELECT * FROM comments WHERE article_id=1')
+            })
+            .then(({ rowCount }) => {
+
+                expect(rowCount).toBe(0);
+
+                return db
+                .query('SELECT * FROM articles;')
+            })
+            .then(({ rows, rowCount }) => {
+
+                expect(rowCount).toBeGreaterThan(0);
+                rows.forEach((row) => {
+                    expect(row.article_id).not.toBe(1);
+                });
+            });
+        });
+        test('DELETE:400 responds with an appropriate status code and error message when attempting to delete an article using an invalid id', () => {
+            
+            return request(app)
+            .delete('/api/articles/notAnId')
+            .expect(400)
+            .then(({body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('DELETE:404 responds with an appropriate status code and error message when attempting to delete an article that does not exist but the id in the endpoint is valid', () => {
+            
+            return request(app)
+            .delete('/api/articles/99999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
 });
 
 describe('/api/articles', () => {
