@@ -9,129 +9,6 @@ beforeEach(() => seed(data));
 
 afterAll(() => db.end());
 
-describe('/api/topics', () => {
-    describe('GET', () => {
-        test('GET:200 responds with an array of topic objects', () => {
-    
-            return request(app)
-            .get('/api/topics')
-            .expect(200)
-            .then(({ body: { topics } }) => {
-    
-                expect(topics.length).toBe(3);
-                topics.forEach((topic) => {
-    
-                    expect(topic).toEqual(expect.objectContaining({
-                        description: expect.any(String),
-                        slug: expect.any(String)
-                    }));
-                });
-            });
-        });
-    });
-    describe('POST', () => {
-        test('POST:201 responds with a topic object containing the newly created topic', () => {
-            
-            return request(app)
-            .post('/api/topics')
-            .expect(201)
-            .send({
-                slug: 'topic-name-here',
-                description: 'description-here'
-            })
-            .then(({ body: { topic } }) => {
-
-                expect(topic).toEqual(expect.objectContaining({
-                    slug: 'topic-name-here',
-                    description: 'description-here'
-                }));
-            });
-        });
-        test(`POST:201 responds with a topic object containing the newly created topic when request body contains excess information but at least a 'slug' and 'description' field`, () => {
-            
-            return request(app)
-            .post('/api/topics')
-            .expect(201)
-            .send({
-                randomKey: 'randomKeyValue',
-                slug: 'topic-name-here',
-                anotherRandomKey: 78,
-                description: 'description-here',
-                yetAnotherRandomKey: [1, 2, 4]
-            })
-            .then(({ body: { topic } }) => {
-                
-                expect(topic).toEqual(expect.objectContaining({
-                    slug: 'topic-name-here',
-                    description: 'description-here'
-                }));
-            });
-        });
-        test(`POST:201 responds wth a topic object containing only a 'slug' key when provided a body with no 'description' field`, () => {
-            
-            return request(app)
-            .post('/api/topics')
-            .expect(201)
-            .send({
-                slug: 'topic-name-here'
-            })
-            .then(({ body: { topic } }) => {
-
-                expect(topic).toEqual(expect.objectContaining({
-                    slug: 'topic-name-here'
-                }));
-            });
-        });
-        test('POST:400 responds with an appropriate status code and error message when provided a malformed body', () => {
-            
-            return request(app)
-            .post('/api/topics')
-            .expect(400)
-            .send({})
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-        test(`POST:400 responds with an appropriate status code and error message when provided a body with a missing 'slug' field`, () => {
-            
-            return request(app)
-            .post('/api/topics')
-            .expect(400)
-            .send({
-                description: 'description-here'
-            })
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            })
-        });
-        test(`POST:400 responds with an appropriate status code and error message when provided with a 'slug' field that already exists in the database`, () => {
-            
-            return request(app)
-            .post('/api/topics')
-            .expect(400)
-            .send({
-                slug: 'mitch',
-                description: 'the man, the Mitch, the legend'
-            })
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-    });
-});
-
-describe('/*', () => {
-    test('404: responds with an appropriate status code and error message when attempting to access an endpoint which does not exist', () => {
-
-        return request(app)
-        .get('/notARoute')
-        .expect(404)
-        .then(({ body: { msg } }) => {
-            expect(msg).toBe("Path not found.");
-        });
-    });
-});
-
 describe('/api', () => {
     test('GET:200 responds with an array of objects describing all the available endpoints on the api', () => {
 
@@ -144,206 +21,14 @@ describe('/api', () => {
     });
 });
 
-describe('/api/articles/:article_id', () => {
-    describe('GET', () => {
-        test('GET:200 responds with an article object where article_id matches given parameterised endpoint', () => {
+describe('/*', () => {
+    test('404: responds with an appropriate status code and error message when attempting to access an endpoint which does not exist', () => {
 
-            return request(app)
-            .get('/api/articles/5')
-            .expect(200)
-            .then(({ body: { article } }) => {
-
-                expect(article).toEqual(expect.objectContaining({
-                    article_id: 5,
-                    title: "UNCOVERED: catspiracy to bring down democracy",
-                    topic: "cats",
-                    author: "rogersop",
-                    body: "Bastet walks amongst us, and the cats are taking arms!",
-                    votes: 0,
-                    created_at: expect.any(String),
-                    article_img_url:
-                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-                }));
-            });
-        });
-        test(`GET:200 responds with an article object, that includes a 'comment_count' key, where article_id matches given parameterised endpoint`, () => {
-
-            return request(app)
-            .get('/api/articles/5')
-            .expect(200)
-            .then(({ body: { article } }) => {
-
-                expect(article).toEqual(expect.objectContaining({
-                    article_id: 5,
-                    title: "UNCOVERED: catspiracy to bring down democracy",
-                    topic: "cats",
-                    author: "rogersop",
-                    body: "Bastet walks amongst us, and the cats are taking arms!",
-                    votes: 0,
-                    created_at: expect.any(String),
-                    article_img_url:
-                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-                    comment_count: 2
-                }));
-            });
-        });       
-        test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
-
-            return request(app)
-            .get('/api/articles/9999')
-            .expect(404)
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Resource not found.");
-            });
-        });
-        test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
-
-            return request(app)
-            .get('/api/articles/notAnId')
-            .expect(400)
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-    });
-    describe('PATCH', () => {
-        test('PATCH:200 updates an existing article by parameterised article_id', () => {
-
-            const update = {
-                inc_votes: 2
-            };
-    
-            return request(app)
-            .patch('/api/articles/5')
-            .expect(200)
-            .send(update)
-            .then(({ body: { article } }) => {
-
-                expect(article).toEqual({
-                    article_id: 5,
-                    title: "UNCOVERED: catspiracy to bring down democracy",
-                    topic: "cats",
-                    author: "rogersop",
-                    body: "Bastet walks amongst us, and the cats are taking arms!",
-                    votes: 2,
-                    created_at: expect.any(String),
-                    article_img_url:
-                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-                });
-            });
-        });
-        test('PATCH:400 responds with an appropriate status code and error message when provided with a malformed body', () => {
-
-            return request(app)
-            .patch('/api/articles/5')
-            .expect(400)
-            .send({})
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-        test('PATCH:400 responds with an appropriate status code and error message when attempting to update database with an incorrect type ', () => {
-
-            return request(app)
-            .patch('/api/articles/5')
-            .expect(400)
-            .send({
-                inc_votes: 'hello'
-            })
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-        test('PATCH:400 responds with an appropriate status code and error message when attempting to update an invalid article_id type', () => {
-
-            return request(app)
-            .patch('/api/articles/notAnId')
-            .expect(400)
-            .send({
-                inc_votes: 5
-            })
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-        test('PATCH:404 responds with an appropriate status code and error message when attempting to update a valid but non-existent article', () => {
-
-            return request(app)
-            .patch('/api/articles/99999')
-            .expect(404)
-            .send({
-                inc_votes: 5
-            })
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Resource not found.");
-            });
-        });
-    });
-    describe('DELETE', () => {
-        test('DELETE:204 removes an article that has no comments using given parameterised id', () => {
-            
-            return request(app)
-            .delete('/api/articles/2')
-            .expect(204)
-            .then(({ body }) => {
-
-                expect(body).toEqual({});
-
-                return db
-                .query('SELECT * FROM articles;')
-            })
-            .then(({ rows, rowCount }) => {
-
-                expect(rowCount).toBeGreaterThan(0);
-                rows.forEach((row) => {
-                    expect(row.article_id).not.toBe(2);
-                });
-            });
-        });
-        test('DELETE:204 removes an article and any comments it has using given parameterised id', () => {
-            
-            return request(app)
-            .delete('/api/articles/1')
-            .expect(204)
-            .then(({ body }) => {
-
-                expect(body).toEqual({});
-
-                return db
-                .query('SELECT * FROM comments WHERE article_id=1')
-            })
-            .then(({ rowCount }) => {
-
-                expect(rowCount).toBe(0);
-
-                return db
-                .query('SELECT * FROM articles;')
-            })
-            .then(({ rows, rowCount }) => {
-
-                expect(rowCount).toBeGreaterThan(0);
-                rows.forEach((row) => {
-                    expect(row.article_id).not.toBe(1);
-                });
-            });
-        });
-        test('DELETE:400 responds with an appropriate status code and error message when attempting to delete an article using an invalid id', () => {
-            
-            return request(app)
-            .delete('/api/articles/notAnId')
-            .expect(400)
-            .then(({body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-        test('DELETE:404 responds with an appropriate status code and error message when attempting to delete an article that does not exist but the id in the endpoint is valid', () => {
-            
-            return request(app)
-            .delete('/api/articles/99999')
-            .expect(404)
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Resource not found.");
-            });
+        return request(app)
+        .get('/notARoute')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toBe("Path not found.");
         });
     });
 });
@@ -669,6 +354,210 @@ describe('/api/articles', () => {
     });
 });
 
+describe('/api/articles/:article_id', () => {
+    describe('GET', () => {
+        test('GET:200 responds with an article object where article_id matches given parameterised endpoint', () => {
+
+            return request(app)
+            .get('/api/articles/5')
+            .expect(200)
+            .then(({ body: { article } }) => {
+
+                expect(article).toEqual(expect.objectContaining({
+                    article_id: 5,
+                    title: "UNCOVERED: catspiracy to bring down democracy",
+                    topic: "cats",
+                    author: "rogersop",
+                    body: "Bastet walks amongst us, and the cats are taking arms!",
+                    votes: 0,
+                    created_at: expect.any(String),
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                }));
+            });
+        });
+        test(`GET:200 responds with an article object, that includes a 'comment_count' key, where article_id matches given parameterised endpoint`, () => {
+
+            return request(app)
+            .get('/api/articles/5')
+            .expect(200)
+            .then(({ body: { article } }) => {
+
+                expect(article).toEqual(expect.objectContaining({
+                    article_id: 5,
+                    title: "UNCOVERED: catspiracy to bring down democracy",
+                    topic: "cats",
+                    author: "rogersop",
+                    body: "Bastet walks amongst us, and the cats are taking arms!",
+                    votes: 0,
+                    created_at: expect.any(String),
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                    comment_count: 2
+                }));
+            });
+        });       
+        test('GET:400 responds with an appropriate status code and error message when given an invalid id', () => {
+
+            return request(app)
+            .get('/api/articles/notAnId')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('GET:404 responds with an appropriate status code and error message when given a valid but non-existent id', () => {
+
+            return request(app)
+            .get('/api/articles/9999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
+    describe('PATCH', () => {
+        test('PATCH:200 updates an existing article by parameterised article_id', () => {
+
+            const update = {
+                inc_votes: 2
+            };
+    
+            return request(app)
+            .patch('/api/articles/5')
+            .expect(200)
+            .send(update)
+            .then(({ body: { article } }) => {
+
+                expect(article).toEqual({
+                    article_id: 5,
+                    title: "UNCOVERED: catspiracy to bring down democracy",
+                    topic: "cats",
+                    author: "rogersop",
+                    body: "Bastet walks amongst us, and the cats are taking arms!",
+                    votes: 2,
+                    created_at: expect.any(String),
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                });
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when provided with a malformed body', () => {
+
+            return request(app)
+            .patch('/api/articles/5')
+            .expect(400)
+            .send({})
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when attempting to update database with an incorrect type ', () => {
+
+            return request(app)
+            .patch('/api/articles/5')
+            .expect(400)
+            .send({
+                inc_votes: 'hello'
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:400 responds with an appropriate status code and error message when attempting to update an invalid article_id type', () => {
+
+            return request(app)
+            .patch('/api/articles/notAnId')
+            .expect(400)
+            .send({
+                inc_votes: 5
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('PATCH:404 responds with an appropriate status code and error message when attempting to update a valid but non-existent article', () => {
+
+            return request(app)
+            .patch('/api/articles/99999')
+            .expect(404)
+            .send({
+                inc_votes: 5
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
+    describe('DELETE', () => {
+        test('DELETE:204 removes an article that has no comments using given parameterised id', () => {
+            
+            return request(app)
+            .delete('/api/articles/2')
+            .expect(204)
+            .then(({ body }) => {
+
+                expect(body).toEqual({});
+
+                return db
+                .query('SELECT * FROM articles;')
+            })
+            .then(({ rows, rowCount }) => {
+
+                expect(rowCount).toBeGreaterThan(0);
+                rows.forEach((row) => {
+                    expect(row.article_id).not.toBe(2);
+                });
+            });
+        });
+        test('DELETE:204 removes an article and any comments it has using given parameterised id', () => {
+            
+            return request(app)
+            .delete('/api/articles/1')
+            .expect(204)
+            .then(({ body }) => {
+
+                expect(body).toEqual({});
+
+                return db
+                .query('SELECT * FROM comments WHERE article_id=1')
+            })
+            .then(({ rowCount }) => {
+
+                expect(rowCount).toBe(0);
+
+                return db
+                .query('SELECT * FROM articles;')
+            })
+            .then(({ rows, rowCount }) => {
+
+                expect(rowCount).toBeGreaterThan(0);
+                rows.forEach((row) => {
+                    expect(row.article_id).not.toBe(1);
+                });
+            });
+        });
+        test('DELETE:400 responds with an appropriate status code and error message when attempting to delete an article using an invalid id', () => {
+            
+            return request(app)
+            .delete('/api/articles/notAnId')
+            .expect(400)
+            .then(({body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('DELETE:404 responds with an appropriate status code and error message when attempting to delete an article that does not exist but the id in the endpoint is valid', () => {
+            
+            return request(app)
+            .delete('/api/articles/99999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
+});
+
 describe('/api/articles/:article_id/comments', () => {
     describe('GET', () => {
         test(`GET:200 responds with an array of comment objects pertaining to a parameterised article_id, ordering by most recent ('created_at') first ('desc')`, () => {
@@ -885,15 +774,6 @@ describe('/api/comments/:comment_id', () => {
                 });
             });
         });
-        test('DELETE:404 responds with an appropriate status code and error message when attempting to delete a comment that does not exist', () => {
-
-            return request(app)
-            .delete('/api/comments/99999')
-            .expect(404)
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Resource not found.");
-            });
-        });
         test('DELETE:400 responds with an appropriate status code and error message when provided an invalid id', () => {
 
             return request(app)
@@ -901,6 +781,15 @@ describe('/api/comments/:comment_id', () => {
             .expect(400)
             .then(({ body: { msg } }) => {
                 expect(msg).toBe("Bad request.");
+            });
+        });
+        test('DELETE:404 responds with an appropriate status code and error message when attempting to delete a comment that does not exist', () => {
+
+            return request(app)
+            .delete('/api/comments/99999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
             });
         });
     });
@@ -989,6 +878,117 @@ describe('/api/comments/:comment_id', () => {
             })
             .then(({ body: { msg } }) => {
                 expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
+});
+
+describe('/api/topics', () => {
+    describe('GET', () => {
+        test('GET:200 responds with an array of topic objects', () => {
+    
+            return request(app)
+            .get('/api/topics')
+            .expect(200)
+            .then(({ body: { topics } }) => {
+    
+                expect(topics.length).toBe(3);
+                topics.forEach((topic) => {
+    
+                    expect(topic).toEqual(expect.objectContaining({
+                        description: expect.any(String),
+                        slug: expect.any(String)
+                    }));
+                });
+            });
+        });
+    });
+    describe('POST', () => {
+        test('POST:201 responds with a topic object containing the newly created topic', () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(201)
+            .send({
+                slug: 'topic-name-here',
+                description: 'description-here'
+            })
+            .then(({ body: { topic } }) => {
+
+                expect(topic).toEqual(expect.objectContaining({
+                    slug: 'topic-name-here',
+                    description: 'description-here'
+                }));
+            });
+        });
+        test(`POST:201 responds with a topic object containing the newly created topic when request body contains excess information but at least a 'slug' and 'description' field`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(201)
+            .send({
+                randomKey: 'randomKeyValue',
+                slug: 'topic-name-here',
+                anotherRandomKey: 78,
+                description: 'description-here',
+                yetAnotherRandomKey: [1, 2, 4]
+            })
+            .then(({ body: { topic } }) => {
+                
+                expect(topic).toEqual(expect.objectContaining({
+                    slug: 'topic-name-here',
+                    description: 'description-here'
+                }));
+            });
+        });
+        test(`POST:201 responds wth a topic object containing only a 'slug' key when provided a body with no 'description' field`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(201)
+            .send({
+                slug: 'topic-name-here'
+            })
+            .then(({ body: { topic } }) => {
+
+                expect(topic).toEqual(expect.objectContaining({
+                    slug: 'topic-name-here'
+                }));
+            });
+        });
+        test('POST:400 responds with an appropriate status code and error message when provided a malformed body', () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send({})
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test(`POST:400 responds with an appropriate status code and error message when provided a body with a missing 'slug' field`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send({
+                description: 'description-here'
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            })
+        });
+        test(`POST:400 responds with an appropriate status code and error message when provided with a 'slug' field that already exists in the database`, () => {
+            
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send({
+                slug: 'mitch',
+                description: 'the man, the Mitch, the legend'
+            })
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
             });
         });
     });
