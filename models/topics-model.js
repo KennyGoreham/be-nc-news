@@ -12,7 +12,7 @@ exports.selectTopics = () => {
 exports.selectTopicsByTopic = (topic) => {
 
     return db
-    .query(`SELECT * FROM topics WHERE slug=$1`, [topic])
+    .query(`SELECT * FROM topics WHERE slug=$1;`, [topic])
     .then(({ rows,rowCount }) => {
 
         if(rowCount === 0) {
