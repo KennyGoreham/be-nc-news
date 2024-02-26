@@ -38,4 +38,4 @@ npm run seed
 
 This project was built up with "Supertest" and "Jest" which will automatically set your NODE_ENV to 'test' and seed the test database. Tests are separated into test-utils and test-app files, and there are scripts for each in package.json.
 
-This project was built with Node v20.9.0 and Postgres v8.7.3. 
+This project was built with Node v20.9.0, Postgres v8.7.3 and Express v4.18.2.

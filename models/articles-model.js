@@ -54,7 +54,7 @@ exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 
     }
 
     queryValues.push(offset);
-    queryStr += ` OFFSET $${queryValues.length}`;
+    queryStr += ` OFFSET $${queryValues.length};`;
 
     return db
     .query(queryStr, queryValues)
@@ -94,7 +94,7 @@ exports.selectCommentsByArticleId = (article_id, limit = 10, page = 1) => {
         }
         
         queryValues.push(offset);
-        queryStr += ` OFFSET $3`;
+        queryStr += ` OFFSET $3;`;
         
         return db
         .query(queryStr, queryValues)
@@ -116,7 +116,7 @@ exports.insertCommentByArticleId = (comment, article_id) => {
 exports.updateArticlesByArticleId = (votes, article_id) => {
 
     return db
-    .query(`UPDATE articles SET votes=votes + $1 WHERE article_id=$2 RETURNING *`, [votes, article_id])
+    .query(`UPDATE articles SET votes=votes + $1 WHERE article_id=$2 RETURNING *;`, [votes, article_id])
     .then(({ rows }) => {
         return rows[0];
     });
@@ -147,7 +147,7 @@ exports.insertArticle = (newArticle, articleImgUrl) => {
 exports.deleteArticleByArticleId = (articleId) => {
 
     return db
-    .query(`DELETE FROM articles WHERE article_id=$1 RETURNING *`, [articleId])
+    .query(`DELETE FROM articles WHERE article_id=$1 RETURNING *;`, [articleId])
     .then(({ rowCount }) => {
         
         if(rowCount === 0) {

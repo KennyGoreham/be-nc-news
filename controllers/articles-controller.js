@@ -98,7 +98,7 @@ exports.postArticle = (req, res, next) => {
 exports.removeArticleByArticleId = (req, res, next) => {
 
     const { params: { article_id } } = req;
-    const promises = [deleteCommentByArticleId(article_id), deleteArticleByArticleId(article_id)]
+    const promises = [deleteCommentByArticleId(article_id), deleteArticleByArticleId(article_id)];
     
     return Promise.all(promises)
     .then(() => {

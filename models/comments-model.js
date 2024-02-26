@@ -7,7 +7,7 @@ exports.deleteCommentByCommentId = (commentId) => {
     .then(({ rowCount }) => {
 
         if(!rowCount) {
-            return Promise.reject({ status: 404, msg: 'Resource not found.'});
+            return Promise.reject({ status: 404, msg: 'Resource not found.' });
         }
     });
 }
@@ -19,7 +19,7 @@ exports.updateCommentByCommentId = (commentId, votes) => {
     .then(({ rows, rowCount }) => {
 
         return rowCount === 0
-        ? Promise.reject({ status: 404, msg: "Resource not found."})
+        ? Promise.reject({ status: 404, msg: "Resource not found." })
         : rows[0];
     });
 }
@@ -27,7 +27,7 @@ exports.updateCommentByCommentId = (commentId, votes) => {
 exports.deleteCommentByArticleId = (articleId) => {
 
     return db
-    .query(`DELETE FROM comments WHERE article_id=$1 RETURNING *`, [articleId])
+    .query(`DELETE FROM comments WHERE article_id=$1 RETURNING *;`, [articleId])
     .then(() => {
         return;
     });

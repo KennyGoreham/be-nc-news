@@ -4,14 +4,17 @@ exports.handleNonExistentEndpoints = (req, res, next) => {
 
 exports.handlePSQLErrors = (err, req, res, next) => {
 
-    if(err.code === '22P02' || err.code === '23502' || err.code === '23505') {
-        res.status(400).send({ msg: "Bad request." });
-    }
-    else if(err.code === '23503') {
-        res.status(404).send({ msg: "Resource not found." });
-    }
-    else {
-        next(err);
+    switch(err.code) {
+        case '22P02':
+        case '23502':
+        case '23505':
+            res.status(400).send({ msg: "Bad request." });
+            break;
+        case '23503':
+            res.status(404).send({ msg: "Resource not found." });
+            break;
+        default:
+            next(err);
     }
 }
 
