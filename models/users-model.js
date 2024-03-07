@@ -12,7 +12,8 @@ exports.selectUsers = () => {
 exports.selectUsersByUsername = (username) => {
 
     return db
-    .query(`SELECT * FROM users WHERE username=$1;`, [username])
+    .query(`SELECT * FROM users 
+    WHERE username=$1;`, [username])
     .then(({ rows, rowCount }) => {
 
         return rowCount === 0
