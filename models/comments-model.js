@@ -3,7 +3,9 @@ const db = require("../db/connection.js");
 exports.deleteCommentByCommentId = (commentId) => {
 
     return db
-    .query(`DELETE FROM comments WHERE comment_id=$1 RETURNING *;`, [commentId])
+    .query(`DELETE FROM comments 
+    WHERE comment_id=$1 
+    RETURNING *;`, [commentId])
     .then(({ rowCount }) => {
 
         if(!rowCount) {
@@ -15,7 +17,11 @@ exports.deleteCommentByCommentId = (commentId) => {
 exports.updateCommentByCommentId = (commentId, votes) => {
 
     return db
-    .query(`UPDATE comments SET votes=votes + $1 WHERE comment_id=$2 RETURNING *;`, [votes, commentId])
+    .query(`UPDATE comments 
+    SET 
+        votes=votes + $1 
+    WHERE comment_id=$2 
+    RETURNING *;`, [votes, commentId])
     .then(({ rows, rowCount }) => {
 
         return rowCount === 0
@@ -27,7 +33,9 @@ exports.updateCommentByCommentId = (commentId, votes) => {
 exports.deleteCommentByArticleId = (articleId) => {
 
     return db
-    .query(`DELETE FROM comments WHERE article_id=$1 RETURNING *;`, [articleId])
+    .query(`DELETE FROM comments 
+    WHERE article_id=$1 
+    RETURNING *;`, [articleId])
     .then(() => {
         return;
     });

@@ -12,7 +12,8 @@ exports.selectTopics = () => {
 exports.selectTopicsByTopic = (topic) => {
 
     return db
-    .query(`SELECT * FROM topics WHERE slug=$1;`, [topic])
+    .query(`SELECT * FROM topics 
+    WHERE slug=$1;`, [topic])
     .then(({ rows,rowCount }) => {
 
         if(rowCount === 0) {
@@ -24,7 +25,11 @@ exports.selectTopicsByTopic = (topic) => {
 
 exports.insertTopic = (slug, description) => {
 
-    let QueryStr = `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *;`;
+    let QueryStr = `INSERT INTO topics 
+        (slug, description) 
+    VALUES 
+        ($1, $2) 
+    RETURNING *;`;
 
     return db.
     query(QueryStr, [slug, description])
