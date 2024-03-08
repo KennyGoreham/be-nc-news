@@ -754,45 +754,6 @@ describe('/api/articles/:article_id/comments', () => {
 });
 
 describe('/api/comments/:comment_id', () => {
-    describe('DELETE', () => {
-        test('DELETE:204 should delete a comment using given parameterised comment_id', () => {
-
-            return request(app)
-            .delete(`/api/comments/1`)
-            .expect(204)
-            .then(({ body }) => {
-
-                expect(body).toEqual({});
-                return db
-                .query(`SELECT * FROM comments;`);
-            })
-            .then(({ rows, rowCount }) => {
-
-                expect(rowCount).toBe(17);
-                rows.forEach((row) => {
-                    expect(row.comment_id).not.toBe(1);
-                });
-            });
-        });
-        test('DELETE:400 responds with an appropriate status code and error message when provided an invalid id', () => {
-
-            return request(app)
-            .delete('/api/comments/notAnId')
-            .expect(400)
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad request.");
-            });
-        });
-        test('DELETE:404 responds with an appropriate status code and error message when attempting to delete a comment that does not exist', () => {
-
-            return request(app)
-            .delete('/api/comments/99999')
-            .expect(404)
-            .then(({ body: { msg } }) => {
-                expect(msg).toBe("Resource not found.");
-            });
-        });
-    });
     describe('PATCH', () => {
         test('PATCH:200 updates the votes on a comment using its comment_id and responds with the updated comment object', () => {
 
@@ -881,6 +842,46 @@ describe('/api/comments/:comment_id', () => {
             });
         });
     });
+    describe('DELETE', () => {
+        test('DELETE:204 should delete a comment using given parameterised comment_id', () => {
+
+            return request(app)
+            .delete(`/api/comments/1`)
+            .expect(204)
+            .then(({ body }) => {
+
+                expect(body).toEqual({});
+                return db
+                .query(`SELECT * FROM comments;`);
+            })
+            .then(({ rows, rowCount }) => {
+
+                expect(rowCount).toBe(17);
+                rows.forEach((row) => {
+                    expect(row.comment_id).not.toBe(1);
+                });
+            });
+        });
+        test('DELETE:400 responds with an appropriate status code and error message when provided an invalid id', () => {
+
+            return request(app)
+            .delete('/api/comments/notAnId')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad request.");
+            });
+        });
+        test('DELETE:404 responds with an appropriate status code and error message when attempting to delete a comment that does not exist', () => {
+
+            return request(app)
+            .delete('/api/comments/99999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
+  
 });
 
 describe('/api/topics', () => {

@@ -1,268 +1,284 @@
 {
-  "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api",
-    "queries": [],
-    "exampleBody": {},
-    "exampleResponse": {
-      "GET /api/topics": {
-        "description": "serves an array of all topics",
-        "queries": [],
-        "exampleBody": {},
-        "exampleResponse": {
-          "topics": [{ "slug": "football", "description": "Footie!" }]
+  "/api": {
+    "GET": {
+      "description": "serves up a json representation of all the available endpoints of the api",
+      "queries": [],
+      "exampleBody": {},
+      "exampleResponse": {
+        "GET /api/topics": {
+          "description": "serves an array of all topics",
+          "queries": [],
+          "exampleBody": {},
+          "exampleResponse": {
+            "topics": [{ "slug": "football", "description": "Footie!" }]
+          }
         }
       }
     }
   },
-  "GET /api/articles": {
-    "description": "serves an array of all articles sorted by most recent in descending order by default",
-    "queries": [
-      "topic", "sort_by", "order", "limit", "p"
-    ],
-    "exampleBody": {},
-    "exampleResponse": {
-      "articles": [
+  "/api/articles": { 
+    "GET": {
+      "description": "serves an array of all articles sorted by most recent in descending order by default",
+      "queries": [
+        "topic", "sort_by", "order", "limit", "p"
+      ],
+      "exampleBody": {},
+      "exampleResponse": {
+        "articles": [
+          {
+            "author": "icellusedkars",
+            "title": "Eight pug gifs that remind me of mitch",
+            "article_id": 3,
+            "topic": "mitch",
+            "created_at": "2020-11-03T09:12:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": 2,
+            "total_count": 13
+            },
+            {
+            "author": "icellusedkars",
+            "title": "A",
+            "article_id": 6,
+            "topic": "mitch",
+            "created_at": "2020-10-18T02:00:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": 1,
+            "total_count": 13
+            },
+            {
+            "author": "icellusedkars",
+            "title": "Sony Vaio; or, The Laptop",
+            "article_id": 2,
+            "topic": "mitch",
+            "created_at": "2020-10-16T06:03:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": 0,
+            "total_count": 13
+            }
+        ]
+      }
+    },
+    "POST": {
+      "description": "posts a new article and serves it up in a new object",
+      "queries": [],
+      "exampleBody": {
+        "author": "icellusedkars",
+        "title": "How to build a backend",
+        "body": "Sign up to a Northcoders bootcamp!",
+        "topic": "paper",
+        "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      },
+      "exampleResponse": {
+        "author": "icellusedkars",
+        "title": "How to build a backend",
+        "body": "Sign up to a Northcoders bootcamp!",
+        "topic": "paper",
+        "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        "article_id": 14,
+        "created_at": "2024-02-22T19:58:47.984Z",
+        "votes": 0,
+        "comment_count": 0
+      }
+    }
+  },  
+  "/api/articles/:article_id": {
+    "GET": {
+      "description": "serves up an article object that matches the article_id provided",
+      "queries": [],
+      "exampleBody": {},
+      "exampleResponse": {
+        "author": "butter_bridge",
+        "title": "Living in the shadow of a great man",
+        "article_id": 1,
+        "body": "I find this existence challenging",
+        "topic": "mitch",
+        "created_at": "2020-07-09T21:11:00.000Z",
+        "votes": 100,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 11
+      }
+    },
+    "PATCH": {
+      "description": "updates an existing article using its article_id",
+      "queries": [],
+      "exampleBody": { 
+        "inc_votes": 2
+      },
+      "exampleResponse": {
+        "author": "butter_bridge",
+        "title": "Living in the shadow of a great man",
+        "article_id": 1,
+        "body": "I find this existence challenging",
+        "topic": "mitch",
+        "created_at": "2020-07-09T21:11:00.000Z",
+        "votes": 100,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 13
+      }
+    },
+    "DELETE": {
+      "description": "deletes an article and all its comments using its article_id",
+      "queries": [],
+      "exampleBody": {},
+      "exampleResponse": {}
+    }
+  },
+  "/api/articles/:article_id/comments": { 
+    "GET": {
+      "description": "serves up an array of comment objects that matches the article_id provided, sorted by most recent",
+      "queries": [
+        "limit", "p"
+      ],
+      "exampleBody": {},
+      "exampleResponse": [
         {
+          "comment_id": 5,
+          "body": "I hate streaming noses",
+          "article_id": 1,
           "author": "icellusedkars",
-          "title": "Eight pug gifs that remind me of mitch",
-          "article_id": 3,
-          "topic": "mitch",
-          "created_at": "2020-11-03T09:12:00.000Z",
           "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 2,
-          "total_count": 13
-          },
-          {
-          "author": "icellusedkars",
-          "title": "A",
-          "article_id": 6,
-          "topic": "mitch",
-          "created_at": "2020-10-18T02:00:00.000Z",
-          "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 1,
-          "total_count": 13
-          },
-          {
-          "author": "icellusedkars",
-          "title": "Sony Vaio; or, The Laptop",
-          "article_id": 2,
-          "topic": "mitch",
-          "created_at": "2020-10-16T06:03:00.000Z",
-          "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 0,
-          "total_count": 13
-          }
+          "created_at": "2020-11-03T21:00:00.000Z",
+          "total_count": 11
+        },
+        {
+          "comment_id": 2,
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          "article_id": 1,
+          "author": "butter_bridge",
+          "votes": 14,
+          "created_at": "2020-10-31T03:03:00.000Z",
+          "total_count": 11
+        },
+        {
+          "comment_id": 18,
+          "body": "This morning, I showered for nine minutes.",
+          "article_id": 1,
+          "author": "butter_bridge",
+          "votes": 16,
+          "created_at": "2020-07-21T01:20:00.000Z",
+          "total_count": 11
+        }
       ]
-    }
-  },
-  "POST /api/articles": {
-    "description": "posts a new article and serves it up in a new object",
-    "queries": [],
-    "exampleBody": {
-      "author": "icellusedkars",
-      "title": "How to build a backend",
-      "body": "Sign up to a Northcoders bootcamp!",
-      "topic": "paper",
-      "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
     },
-    "exampleResponse": {
-      "author": "icellusedkars",
-      "title": "How to build a backend",
-      "body": "Sign up to a Northcoders bootcamp!",
-      "topic": "paper",
-      "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      "article_id": 14,
-      "created_at": "2024-02-22T19:58:47.984Z",
-      "votes": 0,
-      "comment_count": 0
+    "POST": {
+      "description": "adds a comment to an existing article using its article_id",
+      "queries": [],
+      "exampleBody": {
+        "username": "icellusedkars",
+        "body": "cant stop, wont stop"
+      },
+      "exampleResponse": {
+        "comment_id": 19,
+        "body": "cant stop, wont stop",
+        "article_id": 2,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2024-02-20T12:19:32.779Z",
+        "total_count": 0
+      }
     }
   },
-  "GET /api/articles/:article_id": {
-    "description": "serves up an article object that matches the article_id provided",
-    "queries": [],
-    "exampleBody": {},
-    "exampleResponse": {
-      "author": "butter_bridge",
-      "title": "Living in the shadow of a great man",
-      "article_id": 1,
-      "body": "I find this existence challenging",
-      "topic": "mitch",
-      "created_at": "2020-07-09T21:11:00.000Z",
-      "votes": 100,
-      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-      "comment_count": 11
-    }
-  },
-  "PATCH /api/articles/:article_id": {
-    "description": "updates an existing article using its article_id",
-    "queries": [],
-    "exampleBody": { 
-      "inc_votes": 2
-    },
-    "exampleResponse": {
-      "author": "butter_bridge",
-      "title": "Living in the shadow of a great man",
-      "article_id": 1,
-      "body": "I find this existence challenging",
-      "topic": "mitch",
-      "created_at": "2020-07-09T21:11:00.000Z",
-      "votes": 100,
-      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-      "comment_count": 13
-    }
-  },
-  "DELETE /api/articles/:article_id": {
-    "description": "deletes an article and all its comments using its article_id",
-    "queries": [],
-    "exampleBody": {},
-    "exampleResponse": {}
-  },
-  "GET /api/articles/:article_id/comments": {
-    "description": "serves up an array of comment objects that matches the article_id provided, sorted by most recent",
-    "queries": [
-      "limit", "p"
-    ],
-    "exampleBody": {},
-    "exampleResponse": [
-      {
+  "/api/comments/:comment_id": {
+    "PATCH": {
+      "description": "updates the votes on a comment using its comment_id and serves up the comment object",
+      "queries": [],
+      "exampleBody": {
+        "inc_votes": 5
+      },
+      "exampleResponse": {
         "comment_id": 5,
         "body": "I hate streaming noses",
         "article_id": 1,
         "author": "icellusedkars",
-        "votes": 0,
+        "votes": 5,
         "created_at": "2020-11-03T21:00:00.000Z",
         "total_count": 11
-      },
-      {
-        "comment_id": 2,
-        "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-        "article_id": 1,
-        "author": "butter_bridge",
-        "votes": 14,
-        "created_at": "2020-10-31T03:03:00.000Z",
-        "total_count": 11
-      },
-      {
-        "comment_id": 18,
-        "body": "This morning, I showered for nine minutes.",
-        "article_id": 1,
-        "author": "butter_bridge",
-        "votes": 16,
-        "created_at": "2020-07-21T01:20:00.000Z",
-        "total_count": 11
       }
-    ]
-  },
-  "POST /api/articles/:article_id/comments": {
-    "description": "adds a comment to an existing article using its article_id",
-    "queries": [],
-    "exampleBody": {
-      "username": "icellusedkars",
-      "body": "cant stop, wont stop"
     },
-    "exampleResponse": {
-      "comment_id": 19,
-      "body": "cant stop, wont stop",
-      "article_id": 2,
-      "author": "icellusedkars",
-      "votes": 0,
-      "created_at": "2024-02-20T12:19:32.779Z",
-      "total_count": 0
+    "DELETE": {
+      "description": "deletes an existing comment using its comment_id",
+      "queries": [],
+      "exampleBody": {},
+      "exampleResponse": {}
     }
   },
-  "PATCH /api/comments/:comment_id": {
-    "description": "updates the votes on a comment using its comment_id and serves up the comment object",
-    "queries": [],
-    "exampleBody": {
-      "inc_votes": 5
+  "/api/topics": {
+    "GET": {
+      "description": "serves an array of all topics",
+      "queries": [],
+      "exampleBody": {},
+      "exampleResponse": {
+        "topics": [
+          {
+            "slug": "mitch",
+            "description": "The man, the Mitch, the legend"
+          },
+          {
+            "slug": "cats",
+            "description": "Not dogs"
+          },
+          {
+            "slug": "paper",
+            "description": "what books are made of"
+          }
+        ]
+      }
     },
-    "exampleResponse": {
-      "comment_id": 5,
-      "body": "I hate streaming noses",
-      "article_id": 1,
-      "author": "icellusedkars",
-      "votes": 5,
-      "created_at": "2020-11-03T21:00:00.000Z",
-      "total_count": 11
+    "POST": {
+      "description": "posts a new topic and serves it up in an object",
+      "queries": [],
+      "exampleBody": {
+        "slug": "topic name here",
+        "description": "description here"
+      },
+      "exampleResponse": {
+        "slug": "topic name here",
+        "description": "description here"
+      }
     }
   },
-  "DELETE /api/comments/:comment_id": {
-    "description": "deletes an existing comment using its comment_id",
-    "queries": [],
-    "exampleBody": {},
-    "exampleResponse": {}
-  },
-  "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "queries": [],
-    "exampleBody": {},
-    "exampleResponse": {
-      "topics": [
+  "/api/users": {
+    "GET": {
+      "description": "serves an array of user objects",
+      "queries": [],
+      "exampleBody": {},
+      "exampleResponse": [
         {
-          "slug": "mitch",
-          "description": "The man, the Mitch, the legend"
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
         },
         {
-          "slug": "cats",
-          "description": "Not dogs"
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
         },
         {
-          "slug": "paper",
-          "description": "what books are made of"
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        },
+        {
+          "username": "lurker",
+          "name": "do_nothing",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
         }
       ]
     }
   },
-  "POST /api/topics": {
-    "description": "posts a new topic and serves it up in an object",
-    "queries": [],
-    "exampleBody": {
-      "slug": "topic name here",
-      "description": "description here"
-    },
-    "exampleResponse": {
-      "slug": "topic name here",
-      "description": "description here"
-    }
-  },
-  "GET /api/users": {
-    "description": "serves an array of user objects",
-    "queries": [],
-    "exampleBody": {},
-    "exampleResponse": [
-      {
+  "/api/users/:username": {
+    "GET": {
+      "description": "serves up a user object that matches the username provided",
+      "queries": [],
+      "exampleBody": {},
+      "exampleResponse": {
         "username": "butter_bridge",
         "name": "jonny",
         "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-      },
-      {
-        "username": "icellusedkars",
-        "name": "sam",
-        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
-      },
-      {
-        "username": "rogersop",
-        "name": "paul",
-        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
-      },
-      {
-        "username": "lurker",
-        "name": "do_nothing",
-        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
       }
-    ]
-  },
-  "GET /api/users/:username": {
-    "description": "serves up a user object that matches the username provided",
-    "queries": [],
-    "exampleBody": {},
-    "exampleResponse": {
-      "username": "butter_bridge",
-      "name": "jonny",
-      "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
     }
   }
 }
