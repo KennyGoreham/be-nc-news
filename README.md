@@ -8,7 +8,7 @@ Northcoders News API is an app that collates and displays information about arti
 
 To run this project locally, first clone this repo:
 
-https://github.com/KennyGoreham/nc_news
+https://github.com/KennyGoreham/be-nc-news
 
 To install all the dependencies required for the app to function, run:
 
