@@ -5,14 +5,15 @@
       "queries": [],
       "exampleBody": {},
       "exampleResponse": {
-        "GET /api/topics": {
-          "description": "serves an array of all topics",
-          "queries": [],
-          "exampleBody": {},
-          "exampleResponse": {
-            "topics": [{ "slug": "football", "description": "Footie!" }]
-          }
-        }
+        "/api": "{...}",
+        "/api/articles": "{...}",
+        "/api/articles/:article_id": "{...}",
+        "/api/articles/:article_id/comments": "{...}",
+        "/api/comments/:comment_id": "{...}",
+        "/api/topics": "{...}",
+        "/api/users": "{...}",
+        "/api/users/:username": "{...}",
+        "/api/users/:username/comments": "{...}"
       }
     }
   },
@@ -26,56 +27,79 @@
       "exampleResponse": {
         "articles": [
           {
-            "author": "icellusedkars",
-            "title": "Eight pug gifs that remind me of mitch",
-            "article_id": 3,
-            "topic": "mitch",
-            "created_at": "2020-11-03T09:12:00.000Z",
+            "author": "grumpy19",
+            "title": "The Notorious MSG’s Unlikely Formula For Success",
+            "article_id": 34,
+            "topic": "cooking",
+            "created_at": "2020-11-22T11:13:00.000Z",
             "votes": 0,
-            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-            "comment_count": 2,
-            "total_count": 13
-            },
-            {
-            "author": "icellusedkars",
-            "title": "A",
+            "article_img_url": "https://images.pexels.com/photos/2403392/pexels-photo-2403392.jpeg?w=700&h=700",
+            "comment_count": 11,
+            "total_count": 37
+          },
+          {
+            "author": "tickle122",
+            "title": "The battle for Node.js security has only begun",
+            "article_id": 12,
+            "topic": "coding",
+            "created_at": "2020-11-15T13:25:00.000Z",
+            "votes": 1,
+            "article_img_url": "https://images.pexels.com/photos/10845119/pexels-photo-10845119.jpeg?w=700&h=700",
+            "comment_count": 7,
+            "total_count": 37
+          },
+          {
+            "author": "grumpy19",
+            "title": "JavaScript’s Apply, Call, and Bind Methods are Essential for JavaScript Professionals",
             "article_id": 6,
-            "topic": "mitch",
-            "created_at": "2020-10-18T02:00:00.000Z",
+            "topic": "coding",
+            "created_at": "2020-11-11T15:09:00.000Z",
             "votes": 0,
-            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-            "comment_count": 1,
-            "total_count": 13
-            },
-            {
-            "author": "icellusedkars",
-            "title": "Sony Vaio; or, The Laptop",
-            "article_id": 2,
-            "topic": "mitch",
-            "created_at": "2020-10-16T06:03:00.000Z",
+            "article_img_url": "https://images.pexels.com/photos/4383298/pexels-photo-4383298.jpeg?w=700&h=700",
+            "comment_count": 11,
+            "total_count": 37
+          },
+          {
+            "author": "jessjelly",
+            "title": "Running a Node App",
+            "article_id": 1,
+            "topic": "coding",
+            "created_at": "2020-11-07T06:03:00.000Z",
             "votes": 0,
-            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-            "comment_count": 0,
-            "total_count": 13
-            }
-        ]
+            "article_img_url": "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+            "comment_count": 8,
+            "total_count": 37
+          },
+          {
+            "author": "tickle122",
+            "title": "Agility Training Drills For Football Players",
+            "article_id": 21,
+            "topic": "football",
+            "created_at": "2020-10-26T10:05:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/3448250/pexels-photo-3448250.jpeg?w=700&h=700",
+            "comment_count": 8,
+            "total_count": 37
+          }
+        ],
+        "totalPages": 8
       }
     },
     "POST": {
       "description": "posts a new article and serves it up in a new object",
       "queries": [],
       "exampleBody": {
-        "author": "icellusedkars",
+        "author": "weegembump",
         "title": "How to build a backend",
         "body": "Sign up to a Northcoders bootcamp!",
-        "topic": "paper",
+        "topic": "coding",
         "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
       },
       "exampleResponse": {
-        "author": "icellusedkars",
+        "author": "weegembump",
         "title": "How to build a backend",
         "body": "Sign up to a Northcoders bootcamp!",
-        "topic": "paper",
+        "topic": "coding",
         "article_img_url": "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
         "article_id": 14,
         "created_at": "2024-02-22T19:58:47.984Z",
@@ -90,15 +114,15 @@
       "queries": [],
       "exampleBody": {},
       "exampleResponse": {
-        "author": "butter_bridge",
-        "title": "Living in the shadow of a great man",
-        "article_id": 1,
-        "body": "I find this existence challenging",
-        "topic": "mitch",
-        "created_at": "2020-07-09T21:11:00.000Z",
-        "votes": 100,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        "comment_count": 11
+        "author": "jessjelly",
+        "title": "Please stop worrying about Angular 3",
+        "article_id": 5,
+        "body": "Another Angular version planned already? Whaaaat? Didn’t Angular 2 just ship? Why Angular 3? What? Why? First off, there is no massive rewrite, and won’t be for Angular 3. Secondly, let me explain the future of Angular 2 and what Angular 3, Angular 4 will mean for you.",
+        "topic": "coding",
+        "created_at": "2020-04-21T17:06:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/14011035/pexels-photo-14011035.jpeg?w=700&h=700",
+        "comment_count": 6
       }
     },
     "PATCH": {
@@ -108,15 +132,15 @@
         "inc_votes": 2
       },
       "exampleResponse": {
-        "author": "butter_bridge",
-        "title": "Living in the shadow of a great man",
-        "article_id": 1,
-        "body": "I find this existence challenging",
-        "topic": "mitch",
-        "created_at": "2020-07-09T21:11:00.000Z",
-        "votes": 100,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        "comment_count": 13
+        "author": "jessjelly",
+        "title": "Please stop worrying about Angular 3",
+        "article_id": 5,
+        "body": "Another Angular version planned already? Whaaaat? Didn’t Angular 2 just ship? Why Angular 3? What? Why? First off, there is no massive rewrite, and won’t be for Angular 3. Secondly, let me explain the future of Angular 2 and what Angular 3, Angular 4 will mean for you.",
+        "topic": "coding",
+        "created_at": "2020-04-21T17:06:00.000Z",
+        "votes": 2,
+        "article_img_url": "https://images.pexels.com/photos/14011035/pexels-photo-14011035.jpeg?w=700&h=700",
+        "comment_count": 6
       }
     },
     "DELETE": {
@@ -133,51 +157,72 @@
         "limit", "p"
       ],
       "exampleBody": {},
-      "exampleResponse": [
-        {
-          "comment_id": 5,
-          "body": "I hate streaming noses",
-          "article_id": 1,
-          "author": "icellusedkars",
-          "votes": 0,
-          "created_at": "2020-11-03T21:00:00.000Z",
-          "total_count": 11
-        },
-        {
-          "comment_id": 2,
-          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-          "article_id": 1,
-          "author": "butter_bridge",
-          "votes": 14,
-          "created_at": "2020-10-31T03:03:00.000Z",
-          "total_count": 11
-        },
-        {
-          "comment_id": 18,
-          "body": "This morning, I showered for nine minutes.",
-          "article_id": 1,
-          "author": "butter_bridge",
-          "votes": 16,
-          "created_at": "2020-07-21T01:20:00.000Z",
-          "total_count": 11
-        }
-      ]
+      "exampleResponse": {
+        "comments": [
+          {
+            "comment_id": 82,
+            "body": "Facilis ipsam illum aut voluptatibus. Repudiandae cupiditate quo fugiat earum est ut autem repudiandae excepturi. Fuga voluptatem iusto ut. Nulla sequi culpa qui eaque. Architecto non veniam distinctio.",
+            "article_id": 11,
+            "author": "happyamy2016",
+            "votes": -4,
+            "created_at": "2020-08-19T08:08:00.000Z",
+            "total_count": 5
+          },
+          {
+            "comment_id": 12,
+            "body": "Maiores sed dolor. Consequatur quasi itaque culpa. Tempora ut autem est ad est voluptatem officiis. Ut sequi quaerat qui nam sunt.",
+            "article_id": 11,
+            "author": "happyamy2016",
+            "votes": 15,
+            "created_at": "2020-06-19T06:00:00.000Z",
+            "total_count": 5
+          },
+          {
+            "comment_id": 161,
+            "body": "Repellendus eos consequatur atque autem voluptatem et neque facere quas. Illum quaerat numquam labore dolorem harum dolores veritatis. Animi ex dolorum amet. Atque quia quasi labore sed molestiae.",
+            "article_id": 11,
+            "author": "weegembump",
+            "votes": 18,
+            "created_at": "2020-04-01T23:01:00.000Z",
+            "total_count": 5
+          },
+          {
+            "comment_id": 298,
+            "body": "Et non quia sunt dolorem vero sint optio perspiciatis. Assumenda dolor est aut cum amet assumenda autem. Iusto earum vero animi nihil error non placeat.",
+            "article_id": 11,
+            "author": "tickle122",
+            "votes": 13,
+            "created_at": "2020-03-14T14:02:00.000Z",
+            "total_count": 5
+          },
+          {
+            "comment_id": 203,
+            "body": "Fugiat voluptatibus numquam aut aut sit quae magni qui. Ipsam sed reprehenderit aliquid quibusdam. Id ducimus quisquam modi sed repellendus quia omnis aliquam et. Qui blanditiis voluptate doloremque esse qui sint deserunt voluptas. Et rerum et rerum quia repudiandae vero omnis voluptas sit. Ipsam eos fugiat omnis rem quia sequi omnis reprehenderit minus.",
+            "article_id": 11,
+            "author": "tickle122",
+            "votes": -1,
+            "created_at": "2020-01-09T19:17:00.000Z",
+            "total_count": 5
+          }
+        ],
+        "totalPages": 1
+      }
     },
     "POST": {
       "description": "adds a comment to an existing article using its article_id",
       "queries": [],
       "exampleBody": {
-        "username": "icellusedkars",
+        "username": "weegembump",
         "body": "cant stop, wont stop"
       },
       "exampleResponse": {
-        "comment_id": 19,
+        "comment_id": 301,
         "body": "cant stop, wont stop",
         "article_id": 2,
-        "author": "icellusedkars",
+        "author": "weegembump",
         "votes": 0,
         "created_at": "2024-02-20T12:19:32.779Z",
-        "total_count": 0
+        "total_count": 7
       }
     }
   },
@@ -189,13 +234,13 @@
         "inc_votes": 5
       },
       "exampleResponse": {
-        "comment_id": 5,
-        "body": "I hate streaming noses",
-        "article_id": 1,
-        "author": "icellusedkars",
+        "comment_id": 301,
+        "body": "cant stop, wont stop",
+        "article_id": 2,
+        "author": "weegembump",
         "votes": 5,
-        "created_at": "2020-11-03T21:00:00.000Z",
-        "total_count": 11
+        "created_at": "2024-02-20T12:19:32.779Z",
+        "total_count": 7
       }
     },
     "DELETE": {
@@ -213,16 +258,16 @@
       "exampleResponse": {
         "topics": [
           {
-            "slug": "mitch",
-            "description": "The man, the Mitch, the legend"
+            "slug": "coding",
+            "description": "Code is love, code is life"
           },
           {
-            "slug": "cats",
-            "description": "Not dogs"
+            "slug": "football",
+            "description": "FOOTIE!"
           },
           {
-            "slug": "paper",
-            "description": "what books are made of"
+            "slug": "cooking",
+            "description": "Hey good looking, what you got cooking?"
           }
         ]
       }
@@ -245,28 +290,40 @@
       "description": "serves an array of user objects",
       "queries": [],
       "exampleBody": {},
-      "exampleResponse": [
-        {
-          "username": "butter_bridge",
-          "name": "jonny",
-          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-        },
-        {
-          "username": "icellusedkars",
-          "name": "sam",
-          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
-        },
-        {
-          "username": "rogersop",
-          "name": "paul",
-          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
-        },
-        {
-          "username": "lurker",
-          "name": "do_nothing",
-          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
-        }
-      ]
+      "exampleResponse": {
+        "users": [
+          {
+            "username": "tickle122",
+            "name": "Tom Tickle",
+            "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+          },
+          {
+            "username": "grumpy19",
+            "name": "Paul Grump",
+            "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/7/78/Mr-Grumpy-3A.PNG/revision/latest?cb=20170707233013"
+          },
+          {
+            "username": "happyamy2016",
+            "name": "Amy Happy",
+            "avatar_url": "https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729"
+          },
+          {
+            "username": "cooljmessy",
+            "name": "Peter Messy",
+            "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/1/1a/MR_MESSY_4A.jpg/revision/latest/scale-to-width-down/250?cb=20170730171002"
+          },
+          {
+            "username": "weegembump",
+            "name": "Gemma Bump",
+            "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/7/7e/MrMen-Bump.png/revision/latest?cb=20180123225553"
+          },
+          {
+            "username": "jessjelly",
+            "name": "Jess Jelly",
+            "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/4/4f/MR_JELLY_4A.jpg/revision/latest?cb=20180104121141"
+          }
+        ]
+      }
     }
   },
   "/api/users/:username": {
@@ -275,9 +332,11 @@
       "queries": [],
       "exampleBody": {},
       "exampleResponse": {
-        "username": "butter_bridge",
-        "name": "jonny",
-        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        "user": {
+          "username": "weegembump",
+          "name": "Gemma Bump",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/7/7e/MrMen-Bump.png/revision/latest?cb=20180123225553"
+        }
       }
     }
   },
@@ -286,24 +345,50 @@
       "description": "serves up an array of comment objects that matches the username provided",
       "queries" : [],
       "exampleBody": {},
-      "exampleResponse": [
-        {
-          "comment_id": 5,
-          "body": "I hate streaming noses",
-          "article_id": 1,
-          "author": "icellusedkars",
-          "votes": 0,
-          "created_at": "2020-11-03T21:00:00.000Z"
-        },
-        {
-          "comment_id": 11,
-          "body": "Ambidextrous marsupial",
-          "article_id": 3,
-          "author": "icellusedkars",
-          "votes": 0,
-          "created_at": "2020-09-19T23:10:00.000Z"
-        }
-      ]
+      "exampleResponse": {
+        "comments": [
+          {
+            "comment_id": 10,
+            "body": "Incidunt quidem ut. Voluptatem blanditiis ipsa commodi suscipit quae et. Magni assumenda veritatis voluptatem dolor qui.",
+            "article_id": 27,
+            "author": "weegembump",
+            "votes": 7,
+            "created_at": "2020-11-24T08:26:00.000Z"
+          },
+          {
+            "comment_id": 213,
+            "body": "Voluptas accusantium eius earum aliquid. Earum et rerum. Expedita dolores ut autem fuga id accusamus et.",
+            "article_id": 7,
+            "author": "weegembump",
+            "votes": 14,
+            "created_at": "2020-11-21T01:09:00.000Z"
+          },
+          {
+            "comment_id": 216,
+            "body": "Similique ea aperiam incidunt numquam ratione dignissimos vero reiciendis voluptatem. Saepe quas soluta ut odit. Laboriosam et aspernatur et rerum mollitia optio. Est nisi consequatur veritatis aut occaecati soluta quae beatae. Eligendi debitis ratione temporibus aperiam.",
+            "article_id": 35,
+            "author": "weegembump",
+            "votes": -2,
+            "created_at": "2020-11-20T10:12:00.000Z"
+          },
+          {
+            "comment_id": 289,
+            "body": "Et quis in ut rerum minus. Quo cumque aut inventore ipsum amet velit tenetur illo. Unde et quis rem aut asperiores qui quaerat esse. Corporis aut velit sit doloribus est quia dolores.",
+            "article_id": 19,
+            "author": "weegembump",
+            "votes": 2,
+            "created_at": "2020-11-13T13:12:00.000Z"
+          },
+          {
+            "comment_id": 276,
+            "body": "Voluptatem unde dolor id et. Voluptas vitae soluta. Rerum aperiam illum dolores ducimus optio et possimus dolorum quo.",
+            "article_id": 12,
+            "author": "weegembump",
+            "votes": 20,
+            "created_at": "2020-10-20T01:11:00.000Z"
+          }
+        ]
+      }
     }
   }
 }

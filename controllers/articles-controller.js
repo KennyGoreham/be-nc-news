@@ -1,7 +1,6 @@
 const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId, insertArticle, deleteArticleByArticleId } = require('../models/articles-model.js');
 const { deleteCommentByArticleId } = require('../models/comments-model.js');
 const { selectTopicsByTopic } = require('../models/topics-model.js');
-const { handlePagination } = require('../models/utils-model.js');
 
 exports.getArticleByArticleId = (req, res, next) => {
 
@@ -33,7 +32,7 @@ exports.getArticles = (req, res, next) => {
             res.status(404).send({ msg: "Resource not found." });
         }
 
-        res.status(200).send({ articles: { paginatedArticles: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages } });
+        res.status(200).send({ articles: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages });
     })
     .catch((err) => {
         next(err);
@@ -54,7 +53,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
             res.status(404).send({ msg: "Resource not found." });
         }
 
-        res.status(200).send({ comments: { paginatedComments: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages } });
+        res.status(200).send({ comments: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages });
     })
     .catch((err) => {
         next(err);
