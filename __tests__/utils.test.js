@@ -3,6 +3,7 @@ const {
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
+const { handlePagination } = require('../models/utils-model.js');
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -100,5 +101,67 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
+  });
+});
+
+describe('handlePagination', () => {
+  test(`returns an empty array when passed an empty array`, () => {
+    const input = [];
+    const expected = handlePagination(input);
+    expect(expected).toEqual([]);
+  });
+  test(`returns a limited array of objects when passed a limit argument and a default page value of 1`, () => {
+    const input = [
+      { 1: 2 },
+      { 2: 3 },
+      { 3: 4 },
+      { 4: 5 }
+    ];
+    const expected = handlePagination(input, 2, 1);
+    expect(expected.length).toBe(2);
+  });
+  test(`returns the input array when passed limit argument is greater than input's length`, () => {
+    const input = [
+      { 1: 2 },
+      { 2: 3 },
+      { 3: 4 },
+      { 4: 5 }
+    ];
+    const expected = handlePagination(input, 10, 1);
+    expect(expected).toEqual([
+      { 1: 2 },
+      { 2: 3 },
+      { 3: 4 },
+      { 4: 5 }
+    ]);
+    expect(expected.length).toBe(4);
+  });
+  test('returns a limited array of objects when passed a limit argument and a page argument greater than 1', () => {
+    const input = [
+      { 1: 2 },
+      { 2: 3 },
+      { 3: 4 },
+      { 4: 5 }
+    ];
+    const expected = handlePagination(input, 2, 2);
+    expect(expected).toEqual([
+      { 3: 4 },
+      { 4: 5 }
+    ]);
+  });
+  test('does not mutate input', () => {
+    const input = [
+      { 1: 2 },
+      { 2: 3 },
+      { 3: 4 },
+      { 4: 5 }
+    ];
+    handlePagination(input, 2, 2);
+    expect(input).toEqual([
+      { 1: 2 },
+      { 2: 3 },
+      { 3: 4 },
+      { 4: 5 }
+    ]);
   });
 });
