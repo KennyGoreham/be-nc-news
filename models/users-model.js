@@ -21,3 +21,14 @@ exports.selectUsersByUsername = (username) => {
         : rows[0];
     });
 }
+
+exports.selectCommentsByUsername = (username) => {
+
+    return db
+    .query(`SELECT * FROM comments
+    WHERE author=$1
+    ORDER BY created_at DESC`, [username])
+    .then(({ rows }) => {
+        return rows;
+    })
+}
