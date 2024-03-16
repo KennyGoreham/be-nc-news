@@ -1045,3 +1045,49 @@ describe('/api/users/:username', () => {
         });
     });
 });
+
+describe('/api/users/:username/comments', () => {
+    describe('GET', () => {
+        test(`GET:200 responds with an array of comment objects pertaining to parameterised username endpoint, sorted by most recent ('created_at') first ('desc')`, () => {
+            
+            return request(app)
+            .get('/api/users/icellusedkars/comments')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+
+                expect(comments.length).toBeGreaterThan(0);
+                comments.forEach((comment) => {
+
+                    expect(comment).toEqual(expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        body: expect.any(String),
+                        article_id: expect.any(Number),
+                        author: "icellusedkars",
+                        votes: expect.any(Number),
+                        created_at: expect.any(String)
+                    }));
+                });
+                expect(comments).toBeSortedBy('created_at', { descending: true });
+            });
+        });
+        test('GET:200 responds with an empty array when user has no comments', () => {
+            
+            return request(app)
+            .get('/api/users/lurker/comments')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+
+                expect(comments).toEqual([]);
+            });
+        });
+        test('GET:404 responds with an appropriate status code and errorr message when attempting to query comments from a username that does not exist', () => {
+            
+            return request(app)
+            .get('/api/users/notAValidUsername/comments')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Resource not found.");
+            });
+        });
+    });
+});
