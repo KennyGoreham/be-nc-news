@@ -40,10 +40,10 @@ describe('/api/articles', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
-            .then(({ body: { articles } }) => {
+            .then(({ body: { articles: { paginatedArticles } } }) => {
 
-                expect(articles.length).toBeGreaterThan(0);
-                articles.forEach((article) => {
+                expect(paginatedArticles.length).toBeGreaterThan(0);
+                paginatedArticles.forEach((article) => {
 
                     expect(article).toEqual(expect.objectContaining({
                         author: expect.any(String),
@@ -60,7 +60,7 @@ describe('/api/articles', () => {
                         body: expect.any(String)
                     }));
                 });
-                expect(articles).toBeSortedBy('created_at', { descending: true });
+                expect(paginatedArticles).toBeSortedBy('created_at', { descending: true });
             });
         });
         test('GET:200 responds with an array of article objects filtered by a topic query', () => {
@@ -68,10 +68,10 @@ describe('/api/articles', () => {
             return request(app)
             .get('/api/articles?topic=mitch')
             .expect(200)
-            .then(({ body: { articles } }) => {
+            .then(({ body: { articles: { paginatedArticles } } }) => {
 
-                expect(articles.length).toBeGreaterThan(0);
-                articles.forEach((article) => {
+                expect(paginatedArticles.length).toBeGreaterThan(0);
+                paginatedArticles.forEach((article) => {
 
                     expect(article).toEqual(expect.objectContaining({
                         title: expect.any(String),
@@ -91,8 +91,8 @@ describe('/api/articles', () => {
             return request(app)
             .get('/api/articles?topic=paper')
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles).toEqual([]);
+            .then(({ body: { articles: { paginatedArticles } } }) => {
+                expect(paginatedArticles).toEqual([]);
             });
         });
         test('GET:200 responds with an array of objects sorted by given query provided it is a valid column', () => {
@@ -100,10 +100,10 @@ describe('/api/articles', () => {
             return request(app)
             .get('/api/articles?sort_by=title')
             .expect(200)
-            .then(({ body: { articles } }) => {
+            .then(({ body: { articles: { paginatedArticles } } }) => {
 
-                expect(articles.length).toBeGreaterThan(0);
-                expect(articles).toBeSortedBy('title', { descending: true });
+                expect(paginatedArticles.length).toBeGreaterThan(0);
+                expect(paginatedArticles).toBeSortedBy('title', { descending: true });
             })
             .then(() => {
 
@@ -111,10 +111,10 @@ describe('/api/articles', () => {
                 .get('/api/articles?sort_by=votes')
                 .expect(200)
             })
-            .then(({ body: { articles } }) => {
+            .then(({ body: { articles: { paginatedArticles } } }) => {
 
-                expect(articles.length).toBeGreaterThan(0);
-                expect(articles).toBeSortedBy('votes', { descending: true });
+                expect(paginatedArticles.length).toBeGreaterThan(0);
+                expect(paginatedArticles).toBeSortedBy('votes', { descending: true });
             });
         });
         test('GET:200 responds with an array of objects ordered by given query provided it is a valid order', () => {
@@ -122,20 +122,20 @@ describe('/api/articles', () => {
             return request(app)
             .get('/api/articles?order=asc')
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles).toBeSortedBy('created_at');
+            .then(({ body: { articles: { paginatedArticles } } }) => {
+                expect(paginatedArticles).toBeSortedBy('created_at');
             });
         });
-        test('GET:200 responds with an array of objects ordered, sorted and only of a given topic when provided all valid queries', () => {
+        test('GET:200 responds with an array of objects ordered, sorted and of a given topic when provided all valid queries', () => {
 
             return request(app)
             .get('/api/articles?topic=mitch&sort_by=comment_count&order=asc')
             .expect(200)
-            .then(({ body: { articles } }) => {
+            .then(({ body: { articles: { paginatedArticles } } }) => {
 
-                expect(articles.length).toBeGreaterThan(0);
-                expect(articles).toBeSortedBy('comment_count');
-                articles.forEach((article) => {
+                expect(paginatedArticles.length).toBeGreaterThan(0);
+                expect(paginatedArticles).toBeSortedBy('comment_count');
+                paginatedArticles.forEach((article) => {
 
                     expect(article).toEqual(expect.objectContaining({
                         topic: 'mitch'
@@ -143,13 +143,15 @@ describe('/api/articles', () => {
                 });
             });
         });
-        test(`GET:200 responds with an array of article objects that are paginated according to 'limit' and 'p' queries`, () => {
+        test(`GET:200 responds with an array of article objects that are paginated according to 'limit' and 'p' queries and provides a 'total_pages' value`, () => {
 
             return request(app)
             .get('/api/articles?limit=5&p=1')
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles.length).toBe(5);
+            .then(({ body: { articles: { paginatedArticles, totalPages } } }) => {
+
+                expect(paginatedArticles.length).toBe(5);
+                expect(totalPages).toBe(3);
             });
         });
         test(`GET:200 responds with an array of article objects that each have a 'total_count' property that counts up all the articles received with any filters applied but discounting limit and p queries`, () => {
@@ -157,10 +159,10 @@ describe('/api/articles', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
-            .then(({ body: { articles } }) => {
+            .then(({ body: { articles: { paginatedArticles } } }) => {
 
-                expect(articles.length).toBeGreaterThan(0);
-                articles.forEach((article) => {
+                expect(paginatedArticles.length).toBeGreaterThan(0);
+                paginatedArticles.forEach((article) => {
                     expect(article.total_count).toBe(13);
                 });
             })
@@ -170,10 +172,10 @@ describe('/api/articles', () => {
                 .get('/api/articles?topic=mitch')
                 .expect(200)
             })
-            .then(({ body: { articles } }) => {
+            .then(({ body: { articles: { paginatedArticles } } }) => {
 
-                expect(articles.length).toBeGreaterThan(0);
-                articles.forEach((article) => {
+                expect(paginatedArticles.length).toBeGreaterThan(0);
+                paginatedArticles.forEach((article) => {
 
                     expect(article.total_count).toBe(12);
                     expect(article.topic).toBe('mitch');
@@ -185,8 +187,9 @@ describe('/api/articles', () => {
             return request(app)
             .get('/api/articles?limit=99999')
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles[0].total_count).toBe(articles.length);
+            .then(({ body: { articles: { paginatedArticles, totalPages } } }) => {
+                expect(paginatedArticles[0].total_count).toBe(paginatedArticles.length);
+                expect(totalPages).toBe(1);
             });
         });
         test('GET:400 responds with an appropriate status code and error message when attempting a sort_by query that is not a valid column', () => {
@@ -565,10 +568,10 @@ describe('/api/articles/:article_id/comments', () => {
             return request(app)
             .get('/api/articles/1/comments')
             .expect(200)
-            .then(({ body: { comments } }) => {
+            .then(({ body: { comments: { paginatedComments } } }) => {
 
-                expect(comments.length).toBeGreaterThan(0);
-                comments.forEach((comment) => {
+                expect(paginatedComments.length).toBeGreaterThan(0);
+                paginatedComments.forEach((comment) => {
 
                     expect(comment).toEqual(expect.objectContaining({
                         comment_id: expect.any(Number),
@@ -579,7 +582,7 @@ describe('/api/articles/:article_id/comments', () => {
                         created_at: expect.any(String)
                     }));
                 });
-                expect(comments).toBeSortedBy('created_at', { descending: true });
+                expect(paginatedComments).toBeSortedBy('created_at', { descending: true });
             });
         });
         test('GET:200 responds with an empty array when given an id that has no comments', () => {
@@ -587,28 +590,30 @@ describe('/api/articles/:article_id/comments', () => {
             return request(app)
             .get('/api/articles/13/comments')
             .expect(200)
-            .then(({ body: { comments } }) => {
-                expect(comments).toEqual([]);
+            .then(({ body: { comments: { paginatedComments } } }) => {
+                expect(paginatedComments).toEqual([]);
             });
         });
-        test(`GET:200 responds with an array of comment pertaining to a parameterised article_id paginated by 'limit' and 'p' queries`, () => {
+        test(`GET:200 responds with an object containing an array of comments pertaining to a parameterised article_id paginated by 'limit' and 'p' queries and a 'totalPages' key`, () => {
             
             return request(app)
             .get('/api/articles/1/comments?limit=5&p=2')
             .expect(200)
-            .then(({ body: { comments } }) => {
+            .then(({ body: { comments: { paginatedComments, totalPages } } }) => {
 
-                expect(comments.length).toBe(5);
-                expect(comments[0].comment_id).toBe(8);
+                expect(paginatedComments.length).toBe(5);
+                expect(paginatedComments[0].comment_id).toBe(8);
+                expect(totalPages).toBe(3);
             });
         });
-        test('GET:200 responds with every comment object in the table that matches the article_id given when given a limit query that is greater than the number of results ', () => {
+        test('GET:200 responds with every comment object in the table that matches the article_id when given a limit query that is greater than the number of results ', () => {
             
             return request(app)
             .get('/api/articles/1/comments?limit=99999')
             .expect(200)
-            .then(({ body: { comments } }) => {
-                expect(comments.length).toBe(11);
+            .then(({ body: { comments: { paginatedComments, totalPages } } }) => {
+                expect(paginatedComments.length).toBe(11);
+                expect(totalPages).toBe(1);
             });
         });
         test('GET:400 responds with an appropriate status code and error message when attempting an invalid limit query', () => {

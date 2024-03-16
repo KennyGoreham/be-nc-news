@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const { handlePagination } = require('./utils-model.js');
 
 exports.selectArticleByArticleId = (articleId) => {
 
@@ -23,13 +24,17 @@ exports.selectArticleByArticleId = (articleId) => {
     });
 }
 
-exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 10, page = 1) => {
+exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 10, p = 1) => {
 
     if(!['created_at', 'author', 'title', 'article_id', 'topic', 'votes', 'article_img_url', 'comment_count'].includes(sortBy)) {
         return Promise.reject({ status: 400, msg: "Bad request." });
     }
 
     if(!['asc', 'desc'].includes(order)) {
+        return Promise.reject({ status: 400, msg: "Bad request." });
+    }
+
+    if(isNaN(limit) || isNaN(p)) {
         return Promise.reject({ status: 400, msg: "Bad request." });
     }
 
@@ -49,73 +54,55 @@ exports.selectArticles = (topic, sortBy = 'created_at', order = 'desc', limit = 
     queryStr += ` GROUP BY articles.article_id 
     ORDER BY ${sortBy} ${order}`;
 
-    queryValues.push(limit);
-    queryStr += ` LIMIT $${queryValues.length}`;
-
-    let offset = 0;
-
-    if(page !== 1) {
-        offset = (page - 1) * limit;
-    }
-
-    queryValues.push(offset);
-    queryStr += ` OFFSET $${queryValues.length};`;
-
     return db
     .query(queryStr, queryValues)
-    .then(({ rows }) => {
+    .then(({ rows, rowCount }) => {
 
-        rows.forEach((row) => {
+        const totalPages = Math.ceil(rowCount / limit);
+        const paginatedRows = handlePagination(rows, limit, p);
+        
+        paginatedRows.forEach((row) => {
             row.total_count = +row.total_count;
             row.comment_count = +row.comment_count;
         });
-        return rows;
+        
+        return {
+            paginatedRows,
+            totalPages
+        };
     });
 }
 
-exports.selectCommentsByArticleId = (article_id, limit = 10, page = 1) => {
+exports.selectCommentsByArticleId = (article_id, limit = 10, p =1) => {
+
+    if(isNaN(limit) || isNaN(p)) {
+        return Promise.reject({ status: 400, msg: "Bad request." });
+    }
+
+    let queryStr = `SELECT *,
+    COUNT(*) OVER() AS total_count
+    FROM comments
+    WHERE article_id=$1
+    ORDER BY created_at DESC`;
+    
+    const queryValues = [article_id];
     
     return db
-    .query(`SELECT * FROM comments 
-    WHERE article_id=$1;`, [article_id])
-    .then(({ rowCount }) => {
+    .query(queryStr, queryValues)
+    .then(({ rows, rowCount }) => {
 
-        if(rowCount !== 0) {
-            if(Math.ceil(rowCount / limit) < page) {
-                return Promise.reject({ status: 404, msg: "Resource not found." });
-            }
-        }
+        const totalPages = Math.ceil(rowCount / limit);
+        const paginatedRows = handlePagination(rows, limit, p);
 
-        let queryStr = `SELECT *, 
-        COUNT(*) OVER() AS total_count 
-        FROM comments 
-        WHERE article_id=$1 
-        ORDER BY created_at DESC`;
-        
-        const queryValues = [article_id];
-        
-        queryValues.push(limit);
-        queryStr += ` LIMIT $2`;
-        
-        let offset = 0;
-        
-        if(page !== 1) {
-            offset = (page - 1) * limit;
-        }
-        
-        queryValues.push(offset);
-        queryStr += ` OFFSET $3;`;
-        
-        return db
-        .query(queryStr, queryValues)
-        })
-        .then(({ rows }) => {
-
-            rows.forEach((row) => {
-                row.total_count = +row.total_count;
-            });
-            return rows;
+        paginatedRows.forEach((row) => {
+            row.total_count = +row.total_count;
         });
+
+        return {
+            paginatedRows,
+            totalPages
+        };
+    });
 }
 
 exports.insertCommentByArticleId = (comment, article_id) => {

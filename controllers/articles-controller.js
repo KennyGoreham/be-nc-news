@@ -1,6 +1,7 @@
 const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId, insertArticle, deleteArticleByArticleId } = require('../models/articles-model.js');
 const { deleteCommentByArticleId } = require('../models/comments-model.js');
 const { selectTopicsByTopic } = require('../models/topics-model.js');
+const { handlePagination } = require('../models/utils-model.js');
 
 exports.getArticleByArticleId = (req, res, next) => {
 
@@ -18,6 +19,7 @@ exports.getArticleByArticleId = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
 
     const { topic, sort_by, order, limit, p} = req.query;
+
     const promises = [selectArticles(topic, sort_by, order, limit, p)];
 
     if(topic) {
@@ -27,9 +29,11 @@ exports.getArticles = (req, res, next) => {
     return Promise.all(promises)
     .then((promiseResolutions) => {
 
-        promiseResolutions[0].length === 0 && promiseResolutions[1] === undefined
-        ? res.status(404).send({ msg: "Resource not found." })
-        : res.status(200).send({ articles: promiseResolutions[0] });
+        if(promiseResolutions[0].length === 0 || p > promiseResolutions[0].totalPages) {
+            res.status(404).send({ msg: "Resource not found." });
+        }
+
+        res.status(200).send({ articles: { paginatedArticles: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages } });
     })
     .catch((err) => {
         next(err);
@@ -45,7 +49,12 @@ exports.getCommentsByArticleId = (req, res, next) => {
     
     return Promise.all(promises)
     .then((promiseResolutions) => {
-        res.status(200).send({ comments: promiseResolutions[0] });
+
+        if(promiseResolutions[0].length === 0 || p > promiseResolutions[0].totalPages) {
+            res.status(404).send({ msg: "Resource not found." });
+        }
+
+        res.status(200).send({ comments: { paginatedComments: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages } });
     })
     .catch((err) => {
         next(err);
