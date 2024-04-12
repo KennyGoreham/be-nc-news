@@ -1,9 +1,9 @@
-const { selectApiDocs } = require('../models/api-model.js');
+const {selectApiDocs} = require("../models/api-model.js");
 
-exports.getApi = (req, res, next) => {
+exports.getApi = (req, res) => {
 
-    selectApiDocs()
+  selectApiDocs()
     .then((endpoints) => {
-        res.status(200).send({ endpoints });
+      res.status(200).send({endpoints});
     });
-}
+};
