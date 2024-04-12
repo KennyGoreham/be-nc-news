@@ -1,118 +1,118 @@
-const { selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId, insertArticle, deleteArticleByArticleId } = require('../models/articles-model.js');
-const { deleteCommentByArticleId } = require('../models/comments-model.js');
-const { selectTopicsByTopic } = require('../models/topics-model.js');
+const {selectArticleByArticleId, selectArticles, updateArticlesByArticleId, selectCommentsByArticleId, insertCommentByArticleId, insertArticle, deleteArticleByArticleId} = require("../models/articles-model.js");
+const {deleteCommentByArticleId} = require("../models/comments-model.js");
+const {selectTopicsByTopic} = require("../models/topics-model.js");
 
 exports.getArticleByArticleId = (req, res, next) => {
 
-    const { article_id } = req.params;
+  const {article_id} = req.params;
 
-    selectArticleByArticleId(article_id)
+  selectArticleByArticleId(article_id)
     .then((article) => {
-        res.status(200).send({ article });
+      res.status(200).send({article});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
 
 exports.getArticles = (req, res, next) => {
 
-    const { topic, sort_by, order, limit, p} = req.query;
+  const {topic, sort_by, order, limit, p} = req.query;
 
-    const promises = [selectArticles(topic, sort_by, order, limit, p)];
+  const promises = [selectArticles(topic, sort_by, order, limit, p)];
 
-    if(topic) {
-        promises.push(selectTopicsByTopic(topic));
-    }
+  if(topic) {
+    promises.push(selectTopicsByTopic(topic));
+  }
 
-    return Promise.all(promises)
+  return Promise.all(promises)
     .then((promiseResolutions) => {
 
-        if(promiseResolutions[0].length === 0 || p > promiseResolutions[0].totalPages) {
-            res.status(404).send({ msg: "Resource not found." });
-        }
+      if(promiseResolutions[0].length === 0 || p > promiseResolutions[0].totalPages) {
+        res.status(404).send({msg: "Resource not found."});
+      }
 
-        res.status(200).send({ articles: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages });
+      res.status(200).send({articles: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
 
 exports.getCommentsByArticleId = (req, res, next) => {
 
-    const { article_id } = req.params;
-    const { limit, p } = req.query;
+  const {article_id} = req.params;
+  const {limit, p} = req.query;
 
-    const promises = [selectCommentsByArticleId(article_id, limit, p), selectArticleByArticleId(article_id)];
-    
-    return Promise.all(promises)
+  const promises = [selectCommentsByArticleId(article_id, limit, p), selectArticleByArticleId(article_id)];
+
+  return Promise.all(promises)
     .then((promiseResolutions) => {
 
-        if(promiseResolutions[0].length === 0 || p > promiseResolutions[0].totalPages) {
-            res.status(404).send({ msg: "Resource not found." });
-        }
+      if(promiseResolutions[0].length === 0 || p > promiseResolutions[0].totalPages) {
+        res.status(404).send({msg: "Resource not found."});
+      }
 
-        res.status(200).send({ comments: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages });
+      res.status(200).send({comments: promiseResolutions[0].paginatedRows, totalPages: promiseResolutions[0].totalPages});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
 
 exports.postCommentByArticleId = (req, res, next) => {
 
-    const { body, params: { article_id } } = req;
+  const {body, params: {article_id}} = req;
 
-    insertCommentByArticleId(body, article_id)
+  insertCommentByArticleId(body, article_id)
     .then((comment) => {
-        res.status(201).send({ comment });
+      res.status(201).send({comment});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
 
 exports.patchArticlesByArticleId = (req, res, next) => {
 
-    const { params: { article_id }, body: { inc_votes } } = req;
-    const promises = [updateArticlesByArticleId(inc_votes, article_id), selectArticleByArticleId(article_id)];
+  const {params: {article_id}, body: {inc_votes}} = req;
+  const promises = [updateArticlesByArticleId(inc_votes, article_id), selectArticleByArticleId(article_id)];
 
-    return Promise.all(promises)
+  return Promise.all(promises)
     .then((promiseResolutions) => {
-        res.status(200).send({ article: promiseResolutions[0] });
+      res.status(200).send({article: promiseResolutions[0]});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
 
 exports.postArticle = (req, res, next) => {
 
-    const { body, body: { article_img_url } } = req;
+  const {body, body: {article_img_url}} = req;
 
-    insertArticle(body, article_img_url)
+  insertArticle(body, article_img_url)
     .then((newArticle) => {
-        return selectArticleByArticleId(newArticle.article_id);
+      return selectArticleByArticleId(newArticle.article_id);
     })
     .then((article) => {
-        res.status(201).send({ article });
+      res.status(201).send({article});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
 
 exports.removeArticleByArticleId = (req, res, next) => {
 
-    const { params: { article_id } } = req;
-    const promises = [deleteCommentByArticleId(article_id), deleteArticleByArticleId(article_id)];
-    
-    return Promise.all(promises)
+  const {params: {article_id}} = req;
+  const promises = [deleteCommentByArticleId(article_id), deleteArticleByArticleId(article_id)];
+
+  return Promise.all(promises)
     .then(() => {
-        res.status(204).send({});
+      res.status(204).send({});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};

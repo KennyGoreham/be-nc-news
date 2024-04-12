@@ -1,25 +1,25 @@
-const { selectTopics,insertTopic } = require('../models/topics-model.js');
+const {selectTopics,insertTopic} = require("../models/topics-model.js");
 
 exports.getTopics = (req, res, next) => {
-    
-    selectTopics()
+
+  selectTopics()
     .then((topics) => {
-        res.status(200).send({ topics });
+      res.status(200).send({topics});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
 
 exports.postTopics = (req, res, next) => {
 
-    const { slug, description } = req.body;
+  const {slug, description} = req.body;
 
-    insertTopic(slug, description)
+  insertTopic(slug, description)
     .then((topic) => {
-        res.status(201).send({ topic });
+      res.status(201).send({topic});
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
-}
+};
