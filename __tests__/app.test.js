@@ -1052,7 +1052,7 @@ describe("/api/users/:username", () => {
 });
 
 describe("/api/users/:username/comments", () => {
-  describe.only("GET", () => {
+  describe("GET", () => {
     test("GET:200 responds with an array of comment objects pertaining to parameterised username endpoint, sorted by most recent ('created_at') first ('desc')", () => {
 
       return request(app)
