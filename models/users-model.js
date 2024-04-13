@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const {handlePagination} = require("./utils-model.js");
 
 exports.selectUsers = () => {
 
@@ -22,13 +23,24 @@ exports.selectUsersByUsername = (username) => {
     });
 };
 
-exports.selectCommentsByUsername = (username) => {
+exports.selectCommentsByUsername = (username, limit = 10, p = 1) => {
 
+  if(isNaN(limit) || isNaN(p)) {
+    return Promise.reject({status: 400, msg: "Bad request."});
+  }
+  
   return db
     .query(`SELECT * FROM comments
     WHERE author=$1
     ORDER BY created_at DESC`, [username])
-    .then(({rows}) => {
-      return rows;
+    .then(({rows, rowCount}) => {
+
+      const totalPages = Math.ceil(rowCount / limit);
+      const paginatedRows = handlePagination(rows, limit, p);
+
+      return {
+        paginatedRows,
+        totalPages,
+      };
     });
 };
