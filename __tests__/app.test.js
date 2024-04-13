@@ -154,7 +154,7 @@ describe("/api/articles", () => {
           expect(totalPages).toBe(3);
         });
     });
-    test("GET:200 responds with an array of article objects that each have a 'total_count' property that counts up all the articles received with any filters applied but discounting limit and p queries", () => {
+    test("GET:200 responds with an array of article objects that each have a 'total_count' property that counts up all the articles received with any filters applied but discounting 'limit' and 'p' queries", () => {
 
       return request(app)
         .get("/api/articles")
@@ -606,12 +606,13 @@ describe("/api/articles/:article_id/comments", () => {
           expect(totalPages).toBe(3);
         });
     });
-    test("GET:200 responds with every comment object in the table that matches the article_id when given a limit query that is greater than the number of results ", () => {
+    test("GET:200 responds with every comment object in the table that matches the article_id when given a limit query that is greater than the number of results in the database", () => {
 
       return request(app)
         .get("/api/articles/1/comments?limit=99999")
         .expect(200)
         .then(({body: {comments, totalPages}}) => {
+
           expect(comments.length).toBe(11);
           expect(totalPages).toBe(1);
         });
@@ -1061,7 +1062,6 @@ describe("/api/users/:username/comments", () => {
 
           expect(comments.length).toBeGreaterThan(0);
           comments.forEach((comment) => {
-
             expect(comment).toEqual(expect.objectContaining({
               comment_id: expect.any(Number),
               body: expect.any(String),
@@ -1080,11 +1080,69 @@ describe("/api/users/:username/comments", () => {
         .get("/api/users/lurker/comments")
         .expect(200)
         .then(({body: {comments}}) => {
-
           expect(comments).toEqual([]);
         });
     });
-    test("GET:404 responds with an appropriate status code and errorr message when attempting to query comments from a username that does not exist", () => {
+    test("GET:200 responds with an object containing an array of comment objects and a 'totalPages' key paginated by 'limit' and 'p' queries", () => {
+
+      return request(app)
+      .get("/api/users/icellusedkars/comments?limit=5&p=2")
+      .expect(200)
+      .then(({body: {comments, totalPages}}) => {
+
+        expect(comments.length).toBe(5);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(expect.objectContaining({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+            author: "icellusedkars",
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          }));
+        });
+        expect(totalPages).toBe(3);
+      });
+    });
+    test("GET:200 responds with an object containing an array of every comment object that pertains to the parameterised username when given a limit query that is greater than the amount of results in the database", () => {
+
+      return request(app)
+      .get("/api/users/icellusedkars/comments?limit=99999")
+      .expect(200)
+      .then(({body: {comments, totalPages}}) => {
+
+        expect(comments.length).toBe(13);
+        expect(totalPages).toBe(1);
+      });
+    });
+    test("GET:400 responds with an appropriate status code and error message when attempting an invalid limit query", () => {
+      
+      return request(app)
+      .get("/api/users/icellusedkars/comments?limit=notANumber")
+      .expect(400)
+      .then(({body: {msg}}) => {
+        expect(msg).toBe("Bad request.");
+      });
+    });
+    test("GET:400 responds with an appropriate status code and error message when attempting an invalid p query", () => {
+      
+      return request(app)
+      .get("/api/users/icellusedkars/comments?limit=5&p=notANumber")
+      .expect(400)
+      .then(({body: {msg}}) => {
+        expect(msg).toBe("Bad request.");
+      });
+    });
+    test("GET:404 responds with an appropriate status code and error message when attempting to query a page that does not contain any results", () => {
+      
+      return request(app)
+      .get("/api/users/icellusedkars/comments?limit=5&p=99999")
+      .expect(404)
+      .then(({body: {msg}}) => {
+        expect(msg).toBe("Resource not found.");
+      });
+    });
+    test("GET:404 responds with an appropriate status code and error message when attempting to query comments from a username that does not exist", () => {
 
       return request(app)
         .get("/api/users/notAValidUsername/comments")

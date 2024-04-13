@@ -27,14 +27,19 @@ exports.getUsersByUsername = (req, res, next) => {
 exports.getCommentsByUsername = (req, res, next) => {
 
   const {username} = req.params;
-  const promises = [selectCommentsByUsername(username), selectUsersByUsername(username)];
+  const {limit, p} = req.query;
+
+  const promises = [selectCommentsByUsername(username, limit, p), selectUsersByUsername(username)];
 
   return Promise.all(promises)
     .then((promiseResolutions) => {
 
-      promiseResolutions[0].length === 0 && promiseResolutions[1] === undefined
+      promiseResolutions[0].length === 0 || p > promiseResolutions[0].totalPages
         ? res.status(404).send({msg: "Resource not found."})
-        : res.status(200).send({comments: promiseResolutions[0]});
+        : res.status(200).send({
+          comments: promiseResolutions[0].paginatedRows,
+          totalPages: promiseResolutions[0].totalPages,
+        });
     })
     .catch((err) => {
       next(err);
