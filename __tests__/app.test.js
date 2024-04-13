@@ -154,7 +154,7 @@ describe("/api/articles", () => {
           expect(totalPages).toBe(3);
         });
     });
-    test("GET:200 responds with an array of article objects that each have a 'total_count' property that counts up all the articles received with any filters applied but discounting limit and p queries", () => {
+    test("GET:200 responds with an array of article objects that each have a 'total_count' property that counts up all the articles received with any filters applied but discounting 'limit' and 'p' queries", () => {
 
       return request(app)
         .get("/api/articles")
