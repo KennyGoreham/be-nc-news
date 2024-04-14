@@ -28,7 +28,7 @@ exports.selectCommentsByUsername = (username, limit = 10, p = 1) => {
   if(isNaN(limit) || isNaN(p)) {
     return Promise.reject({status: 400, msg: "Bad request."});
   }
-  
+
   return db
     .query(`SELECT * FROM comments
     WHERE author=$1
